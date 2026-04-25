@@ -156,7 +156,7 @@ export function Dashboard() {
 
         <StatsBar />
 
-        <Tabs defaultValue="missions" className="w-full relative z-10">
+        <Tabs defaultValue="missions" className="w-full">
           <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="missions"><Hammer className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.yourMissions")}</span></TabsTrigger>
             <TabsTrigger value="stories"><BookOpen className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.dailyStories")}</span></TabsTrigger>
