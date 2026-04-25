@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore, xpForLevel } from "@/store";
+import { useMissions, useStories } from "@/hooks/use-localized";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { StatsBar } from "@/components/StatsBar";
 import { MissionRunner } from "@/components/MissionRunner";
@@ -20,10 +21,11 @@ export function Dashboard() {
   const { t, i18n } = useTranslation();
   const profile = useStore((s) => s.profile);
   const progress = useStore((s) => s.progress);
-  const missions = useStore((s) => s.missions);
-  const stories = useStore((s) => s.stories);
+  const missions = useMissions();
+  const stories = useStories();
   const setMissions = useStore((s) => s.setMissions);
   const setStories = useStore((s) => s.setStories);
+  const clearGenerated = useStore((s) => s.clearGenerated);
   const completeMission = useStore((s) => s.completeMission);
 
   const [active, setActive] = useState<Mission | null>(null);
@@ -37,11 +39,24 @@ export function Dashboard() {
     return filt.length ? filt : missions;
   }, [missions, profile]);
 
-  // Show level-up dialog whenever XP fills (visual celebration is the moment to choose path next time)
-  // We trigger explicitly after mission completion — but progress already handles XP.
-  // Display level-up choice when user is close to leveling (>= 80%).
   const xpNext = xpForLevel(progress.level);
   const nearLevel = progress.xp / xpNext >= 0.8;
+
+  // When language changes, drop AI-generated content so the UI immediately
+  // shows the localized static fallbacks (in the new language).
+  const langRef = useRef(i18n.language);
+  useEffect(() => {
+    const onLang = (lng: string) => {
+      if (langRef.current !== lng) {
+        langRef.current = lng;
+        clearGenerated();
+      }
+    };
+    i18n.on("languageChanged", onLang);
+    return () => {
+      i18n.off("languageChanged", onLang);
+    };
+  }, [i18n, clearGenerated]);
 
   // Resolve any expired bribe shortcut on mount
   useEffect(() => {
