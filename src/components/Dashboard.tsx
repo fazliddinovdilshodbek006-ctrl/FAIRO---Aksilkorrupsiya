@@ -29,6 +29,7 @@ export function Dashboard() {
   const clearGenerated = useStore((s) => s.clearGenerated);
   const completeMission = useStore((s) => s.completeMission);
 
+  const isChild = useIsChildMode();
   const [active, setActive] = useState<Mission | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -112,21 +113,39 @@ export function Dashboard() {
         </div>
       </header>
 
-      <main className="container max-w-3xl py-5 space-y-5">
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold">{t("home.greeting")}</h1>
-            {profile && (
-              <p className="text-sm text-muted-foreground">
-                {profile.age} • {profile.interests.map((i) => t(`interests.${i}`)).join(", ")}
-              </p>
-            )}
+      <main className={cn("container max-w-3xl py-5 space-y-5", isChild && "ikat-bg")}>
+        {isChild ? (
+          <div className="iq-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-fade-in relative overflow-hidden">
+            <Mascot size="md" className="shrink-0 -mb-2" />
+            <div className="flex-1 min-w-0">
+              <h1 className="font-display text-xl sm:text-2xl font-bold leading-tight">{t("home.greeting")}</h1>
+              {profile && (
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">
+                  {profile.age} • {profile.interests.map((i) => t(`interests.${i}`)).join(", ")}
+                </p>
+              )}
+            </div>
+            <Button size="sm" variant="ghost" onClick={refreshContent} disabled={refreshing} className="shrink-0">
+              {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
+              <span className="ml-1.5 hidden sm:inline">{t("home.refresh")}</span>
+            </Button>
           </div>
-          <Button size="sm" variant="ghost" onClick={refreshContent} disabled={refreshing}>
-            {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
-            <span className="ml-1.5 hidden sm:inline">{t("home.refresh")}</span>
-          </Button>
-        </div>
+        ) : (
+          <div className="flex items-end justify-between border-b pb-4">
+            <div>
+              <h1 className="font-display text-2xl font-bold tracking-tight">{t("home.greeting")}</h1>
+              {profile && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {profile.age} • {profile.interests.map((i) => t(`interests.${i}`)).join(", ")}
+                </p>
+              )}
+            </div>
+            <Button size="sm" variant="ghost" onClick={refreshContent} disabled={refreshing}>
+              {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
+              <span className="ml-1.5 hidden sm:inline">{t("home.refresh")}</span>
+            </Button>
+          </div>
+        )}
 
         <StatsBar />
 
