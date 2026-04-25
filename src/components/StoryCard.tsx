@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { Button } from "@/components/ui/button";
 import { useLawById } from "@/hooks/use-localized";
 import { ageGroupFor, CaseStory } from "@/types";
 import { CheckCircle2, ScrollText, XCircle, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Mascot, useIsChildMode } from "@/components/Mascot";
+import { partyPopper } from "@/lib/celebrate";
 
 export function StoryCard({ story }: { story: CaseStory }) {
   const { t } = useTranslation();
   const profile = useStore((s) => s.profile);
   const progress = useStore((s) => s.progress);
   const answer = useStore((s) => s.answerStory);
+  const isChild = useIsChildMode();
 
   const today = new Date().toISOString().slice(0, 10);
   const savedAnswer = progress.lastStoryDate === today ? progress.storyAnswers?.[story.id] : undefined;
@@ -34,6 +36,7 @@ export function StoryCard({ story }: { story: CaseStory }) {
     const r = answer(story.id, c, story.correct);
     if (r === "already") return;
     setOutcome(r);
+    if (r === "correct") partyPopper();
   };
 
   return (
