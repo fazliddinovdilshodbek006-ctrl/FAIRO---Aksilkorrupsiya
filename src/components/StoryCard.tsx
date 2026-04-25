@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Button } from "@/components/ui/button";
-import { lawById } from "@/data/laws";
+import { useLawById } from "@/hooks/use-localized";
 import { ageGroupFor, CaseStory } from "@/types";
 import { CheckCircle2, ScrollText, XCircle, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,12 +28,12 @@ export function StoryCard({ story }: { story: CaseStory }) {
   }, [story.id, alreadyDone, story.correct]);
 
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
-  const law = lawById(story.lawId);
+  const law = useLawById(story.lawId);
 
   const choose = (c: "A" | "B") => {
     if (outcome) return;
     setPicked(c);
-    const r = answer(story.id, c);
+    const r = answer(story.id, c, story.correct);
     if (r === "already") return;
     setOutcome(r);
   };

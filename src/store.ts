@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Profile, Progress, Mission, CaseStory, AgeGroup } from "@/types";
 import { ageGroupFor } from "@/types";
-import { FALLBACK_MISSIONS, FALLBACK_STORIES } from "@/data/fallback";
 
 const SHORTCUT_DURATION_MS = 2.5 * 60 * 1000; // 2.5 minutes
 const BRIBE_BASE_COST = 30;
@@ -12,6 +11,7 @@ const xpForLevel = (lvl: number) => 100 + lvl * 50;
 type State = {
   profile: Profile | null;
   progress: Progress;
+  // AI-generated overrides; if empty, app falls back to localized static content
   missions: Mission[];
   stories: CaseStory[];
   hydrated: boolean;
@@ -21,11 +21,12 @@ type State = {
 
   setMissions: (m: Mission[]) => void;
   setStories: (s: CaseStory[]) => void;
+  clearGenerated: () => void;
 
   completeMission: (m: Mission) => void;
   takeBribe: () => boolean; // returns true if successful
   resolveBribe: () => void;
-  answerStory: (storyId: string, choice: "A" | "B") => "correct" | "wrong" | "already";
+  answerStory: (storyId: string, choice: "A" | "B", correctOverride?: "A" | "B") => "correct" | "wrong" | "already";
 
   bribeCost: () => number;
   xpToNext: () => number;
@@ -50,8 +51,8 @@ export const useStore = create<State>()(
     (set, get) => ({
       profile: null,
       progress: initialProgress,
-      missions: FALLBACK_MISSIONS,
-      stories: FALLBACK_STORIES,
+      missions: [],
+      stories: [],
       hydrated: false,
 
       setProfile: (p) => set({ profile: p, progress: { ...initialProgress } }),
@@ -59,12 +60,13 @@ export const useStore = create<State>()(
         set({
           profile: null,
           progress: initialProgress,
-          missions: FALLBACK_MISSIONS,
-          stories: FALLBACK_STORIES,
+          missions: [],
+          stories: [],
         }),
 
-      setMissions: (m) => set({ missions: m.length ? m : FALLBACK_MISSIONS }),
-      setStories: (s) => set({ stories: s.length ? s : FALLBACK_STORIES }),
+      setMissions: (m) => set({ missions: m ?? [] }),
+      setStories: (s) => set({ stories: s ?? [] }),
+      clearGenerated: () => set({ missions: [], stories: [] }),
 
       completeMission: (m) => {
         const { progress } = get();
@@ -91,7 +93,6 @@ export const useStore = create<State>()(
             coins,
             missionsCompleted,
             achievements,
-            // honest progress nullifies a pending shortcut illusion
             pendingShortcutLevel: undefined,
             shortcutExpiresAt: undefined,
           },
@@ -118,7 +119,6 @@ export const useStore = create<State>()(
         const { progress } = get();
         if (!progress.shortcutExpiresAt) return;
         if (Date.now() < progress.shortcutExpiresAt) return;
-        // shortcut collapses: remove pending level
         set({
           progress: {
             ...progress,
@@ -128,16 +128,15 @@ export const useStore = create<State>()(
         });
       },
 
-      answerStory: (storyId, choice) => {
-        const { progress, stories } = get();
+      answerStory: (storyId, choice, correctOverride) => {
+        const { progress } = get();
         if (progress.lastStoryDate !== todayKey()) {
           progress.storiesDoneToday = [];
           progress.lastStoryDate = todayKey();
         }
         if (progress.storiesDoneToday.includes(storyId)) return "already";
-        const story = stories.find((s) => s.id === storyId);
-        if (!story) return "already";
-        const correct = story.correct === choice;
+        const correctAnswer = correctOverride ?? "A";
+        const correct = correctAnswer === choice;
         const newProgress: Progress = {
           ...progress,
           storiesDoneToday: [...progress.storiesDoneToday, storyId],
@@ -170,7 +169,7 @@ export const useStore = create<State>()(
       },
     }),
     {
-      name: "iq_state_v1",
+      name: "iq_state_v2",
       onRehydrateStorage: () => (state) => {
         if (state) state.hydrated = true;
       },
