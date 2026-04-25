@@ -4,6 +4,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const ALLOWED_INTERESTS = ["math","english","cyber","coding","art","science","history","music"] as const;
+const ALLOWED_LANGS = ["en","uz","ru","kaa"] as const;
+const ALLOWED_KINDS = ["missions","stories"] as const;
+const MAX_COUNT = 8;
+const MIN_COUNT = 1;
+const MIN_AGE = 7;
+const MAX_AGE = 18;
+const MAX_INTERESTS = 8;
+
 type Body = {
   age: number;
   interests: string[];
@@ -25,23 +34,62 @@ const ageGroup = (age: number) =>
   : age <= 15 ? "ages 13-15 (modern, challenge-based)"
   : "ages 16-18 (mature, civic-tech tone)";
 
+function badRequest(msg: string) {
+  return new Response(JSON.stringify({ error: msg }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const body = (await req.json()) as Body;
-    const { age, interests, language, kind, count = kind === "missions" ? 4 : 4 } = body;
-
-    if (!age || !Array.isArray(interests) || !language || !kind) {
-      return new Response(JSON.stringify({ error: "Invalid body" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let body: Body;
+    try {
+      body = (await req.json()) as Body;
+    } catch {
+      return badRequest("Invalid JSON body");
     }
+
+    const { age, interests, language, kind } = body ?? {};
+    let { count } = body ?? {};
+
+    // Validate age
+    if (typeof age !== "number" || !Number.isInteger(age) || age < MIN_AGE || age > MAX_AGE) {
+      return badRequest("Invalid age");
+    }
+    // Validate language
+    if (!ALLOWED_LANGS.includes(language as any)) {
+      return badRequest("Invalid language");
+    }
+    // Validate kind
+    if (!ALLOWED_KINDS.includes(kind as any)) {
+      return badRequest("Invalid kind");
+    }
+    // Validate interests
+    if (
+      !Array.isArray(interests) ||
+      interests.length === 0 ||
+      interests.length > MAX_INTERESTS ||
+      !interests.every((i) => typeof i === "string" && ALLOWED_INTERESTS.includes(i as any))
+    ) {
+      return badRequest("Invalid interests");
+    }
+    // Validate / clamp count
+    if (count === undefined || count === null) count = 4;
+    if (typeof count !== "number" || !Number.isInteger(count)) {
+      return badRequest("Invalid count");
+    }
+    const safeCount = Math.max(MIN_COUNT, Math.min(MAX_COUNT, count));
+
+    // Deduplicate interests to keep prompt compact
+    const safeInterests = Array.from(new Set(interests));
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY missing" }), {
+      console.error("LOVABLE_API_KEY missing");
+      return new Response(JSON.stringify({ error: "Service unavailable" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -119,8 +167,8 @@ Deno.serve(async (req) => {
         }];
 
     const userMsg = kind === "missions"
-      ? `Generate ${count} short missions for a learner aged ${age} (${ageGroup(age)}) interested in: ${interests.join(", ")}. Each mission ties their interest to anti-corruption values (fairness, integrity, public goods, transparency). Use 'quiz' or 'scenario' type. xp between 20 and 50. Make options plausible. Return via the function.`
-      : `Generate ${count} short daily case stories for a learner aged ${age} (${ageGroup(age)}). Each story is a real-life Uzbek scenario with two choices: A is the honest path, B is the corrupt shortcut. Do NOT label which is correct in the body. Set 'correct' to "A" in the metadata. Pick a relevant lawId from the allowed set. Return via the function.`;
+      ? `Generate ${safeCount} short missions for a learner aged ${age} (${ageGroup(age)}) interested in: ${safeInterests.join(", ")}. Each mission ties their interest to anti-corruption values (fairness, integrity, public goods, transparency). Use 'quiz' or 'scenario' type. xp between 20 and 50. Make options plausible. Return via the function.`
+      : `Generate ${safeCount} short daily case stories for a learner aged ${age} (${ageGroup(age)}). Each story is a real-life Uzbek scenario with two choices: A is the honest path, B is the corrupt shortcut. Do NOT label which is correct in the body. Set 'correct' to "A" in the metadata. Pick a relevant lawId from the allowed set. Return via the function.`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -159,7 +207,12 @@ Deno.serve(async (req) => {
 
     const data = await resp.json();
     const call = data?.choices?.[0]?.message?.tool_calls?.[0];
-    const args = call?.function?.arguments ? JSON.parse(call.function.arguments) : null;
+    let args: any = null;
+    try {
+      args = call?.function?.arguments ? JSON.parse(call.function.arguments) : null;
+    } catch (parseErr) {
+      console.error("Failed to parse tool arguments", parseErr);
+    }
     if (!args) {
       return new Response(JSON.stringify({ error: "No structured output" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -170,8 +223,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    console.error("generate-content error", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    console.error("generate-content unhandled", e);
+    return new Response(JSON.stringify({ error: "Content generation failed. Please try again." }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
