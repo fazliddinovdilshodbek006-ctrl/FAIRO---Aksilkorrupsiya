@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LAWS } from "@/data/laws";
+import { useLaws } from "@/hooks/use-localized";
 import { useStore } from "@/store";
 import { ageGroupFor } from "@/types";
 import { ScrollText, BookOpen } from "lucide-react";
@@ -8,6 +8,7 @@ export function LawLibrary() {
   const { t } = useTranslation();
   const profile = useStore((s) => s.profile);
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
+  const laws = useLaws();
 
   return (
     <div className="space-y-4">
@@ -20,11 +21,11 @@ export function LawLibrary() {
       </div>
 
       <div className="grid gap-3">
-        {LAWS.map((l) => (
+        {laws.map((l) => (
           <article key={l.id} className="iq-card p-4 animate-fade-in">
             <div className="text-xs uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
               <ScrollText className="h-3.5 w-3.5" />
-              {l.source === "constitution" ? "Constitution" : "Anti-Corruption Law"}
+              {l.source === "constitution" ? t("law.constitution") : t("law.antiCorruption")}
             </div>
             <h3 className="font-display font-bold mt-1">{l.title}</h3>
             <div className="text-xs text-muted-foreground">{l.article}</div>
@@ -35,3 +36,4 @@ export function LawLibrary() {
     </div>
   );
 }
+
