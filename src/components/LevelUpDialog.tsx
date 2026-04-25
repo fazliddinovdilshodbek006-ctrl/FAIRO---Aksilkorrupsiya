@@ -67,8 +67,8 @@ export function LevelUpDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-lg iq-card p-6 animate-scale-in">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 overflow-y-auto animate-fade-in">
+      <div className="w-full max-w-lg iq-card p-6 max-h-[90vh] overflow-y-auto my-auto animate-scale-in">
         {phase === "choose" && (
           <>
             <div className="text-center mb-4">
