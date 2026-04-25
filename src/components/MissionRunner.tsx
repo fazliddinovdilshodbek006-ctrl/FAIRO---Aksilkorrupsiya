@@ -6,6 +6,8 @@ import { useStore } from "@/store";
 import { CheckCircle2, XCircle, Sparkles, Coins, AlertTriangle, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Mascot, useIsChildMode } from "@/components/Mascot";
+import { partyPopper } from "@/lib/celebrate";
 
 export function MissionRunner({
   mission,
@@ -20,6 +22,7 @@ export function MissionRunner({
   const bribeCost = useStore((s) => s.bribeCost());
   const takeBribe = useStore((s) => s.takeBribe);
   const coins = useStore((s) => s.progress.coins);
+  const isChild = useIsChildMode();
 
   const [picked, setPicked] = useState<number | null>(null);
   const [result, setResult] = useState<"correct" | "wrong" | null>(null);
@@ -30,10 +33,11 @@ export function MissionRunner({
     if (picked === null) return;
     if (picked === mission.correctIndex) {
       setResult("correct");
+      partyPopper();
       setTimeout(() => {
         onComplete();
         onClose();
-      }, 1600);
+      }, 1800);
     } else {
       setResult("wrong");
     }
