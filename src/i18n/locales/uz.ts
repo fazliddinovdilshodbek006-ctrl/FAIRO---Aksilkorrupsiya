@@ -79,6 +79,8 @@ const uz = {
   },
   law: {
     title: "Qonun kutubxonasi",
+    constitution: "Konstitutsiya",
+    antiCorruption: "Korrupsiyaga qarshi qonun",
     subtitle: "O'zbekiston Konstitutsiyasi va korrupsiyaga qarshi qonun — sodda tilda.",
     readMore: "Batafsil",
   },

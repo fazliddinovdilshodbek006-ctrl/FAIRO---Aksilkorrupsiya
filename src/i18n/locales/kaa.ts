@@ -79,6 +79,8 @@ const kaa = {
   },
   law: {
     title: "Нызам китапханасы",
+    constitution: "Konstituciya",
+    antiCorruption: "Korrupciyaǵa qarsı nızam",
     subtitle: "Өзбекистан Конституциясы ҳәм коррупцияға қарсы нызам — әпиўайы тилде.",
     readMore: "Толығырақ",
   },

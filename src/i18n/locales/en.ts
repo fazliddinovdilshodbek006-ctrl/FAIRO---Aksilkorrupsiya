@@ -79,6 +79,8 @@ const en = {
   },
   law: {
     title: "Law Library",
+    constitution: "Constitution",
+    antiCorruption: "Anti-Corruption Law",
     subtitle: "Uzbekistan's Constitution & Anti-corruption law, in plain words.",
     readMore: "Read more",
   },
