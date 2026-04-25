@@ -28,12 +28,12 @@ export function StoryCard({ story }: { story: CaseStory }) {
   }, [story.id, alreadyDone, story.correct]);
 
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
-  const law = lawById(story.lawId);
+  const law = useLawById(story.lawId);
 
   const choose = (c: "A" | "B") => {
     if (outcome) return;
     setPicked(c);
-    const r = answer(story.id, c);
+    const r = answer(story.id, c, story.correct);
     if (r === "already") return;
     setOutcome(r);
   };
