@@ -14,18 +14,16 @@ export function StoryCard({ story }: { story: CaseStory }) {
   const answer = useStore((s) => s.answerStory);
 
   const today = new Date().toISOString().slice(0, 10);
-  const alreadyDone =
-    progress.lastStoryDate === today && progress.storiesDoneToday.includes(story.id);
+  const savedAnswer = progress.lastStoryDate === today ? progress.storyAnswers?.[story.id] : undefined;
 
-  const [picked, setPicked] = useState<"A" | "B" | null>(alreadyDone ? story.correct : null);
-  const [outcome, setOutcome] = useState<"correct" | "wrong" | null>(alreadyDone ? "correct" : null);
+  const [picked, setPicked] = useState<"A" | "B" | null>(savedAnswer?.choice ?? null);
+  const [outcome, setOutcome] = useState<"correct" | "wrong" | null>(savedAnswer?.outcome ?? null);
 
   useEffect(() => {
-    if (alreadyDone) {
-      setPicked(story.correct);
-      setOutcome("correct");
-    }
-  }, [story.id, alreadyDone, story.correct]);
+    const currentAnswer = progress.lastStoryDate === today ? progress.storyAnswers?.[story.id] : undefined;
+    setPicked(currentAnswer?.choice ?? null);
+    setOutcome(currentAnswer?.outcome ?? null);
+  }, [story.id, progress.lastStoryDate, progress.storyAnswers, today]);
 
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
   const law = useLawById(story.lawId);
