@@ -163,8 +163,8 @@ export function Dashboard() {
 
       {/* Active mission modal */}
       {active && (
-        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="iq-card p-6 max-w-lg w-full">
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 overflow-y-auto animate-fade-in">
+          <div className="iq-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto my-auto">
             <MissionRunner
               mission={active}
               onClose={() => setActive(null)}
