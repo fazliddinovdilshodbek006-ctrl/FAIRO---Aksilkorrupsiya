@@ -60,7 +60,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   return (
     <div className="min-h-dvh bg-background">
       <header className="container flex justify-between items-center py-4">
-        <div className="font-display text-xl font-bold">IntegriQuest</div>
+        <div className="font-display text-xl font-bold">FAIRO</div>
         <LanguageSwitcher />
       </header>
 

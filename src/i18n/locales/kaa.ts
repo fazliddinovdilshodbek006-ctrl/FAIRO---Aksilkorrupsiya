@@ -1,5 +1,5 @@
 const kaa = {
-  app: { name: "IntegriQuest", tagline: "Ҳаллаллық — сениң супер күшиң" },
+  app: { name: "FAIRO", tagline: "Ҳаллаллық — сениң супер күшиң" },
   common: {
     continue: "Даўам етиў",
     back: "Артқа",
@@ -15,7 +15,7 @@ const kaa = {
     coins: "Теңгелер",
   },
   onboarding: {
-    welcome: "IntegriQuest қа хош келипсиз",
+    welcome: "FAIRO қа хош келипсиз",
     welcomeDesc: "Ҳаллаллық, әдалат ҳәм бизди қорғаўшы нызамлар ҳаққындағы қызықлы саяхат.",
     askAge: "Жасың қанша?",
     askAgeDesc: "Тәжирийбени жасыңа сәйкеслестиремиз.",

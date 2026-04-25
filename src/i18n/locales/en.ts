@@ -1,5 +1,5 @@
 const en = {
-  app: { name: "IntegriQuest", tagline: "Honesty is your superpower" },
+  app: { name: "FAIRO", tagline: "Honesty is your superpower" },
   common: {
     continue: "Continue",
     back: "Back",
@@ -15,7 +15,7 @@ const en = {
     coins: "Coins",
   },
   onboarding: {
-    welcome: "Welcome to IntegriQuest",
+    welcome: "Welcome to FAIRO",
     welcomeDesc: "A fun journey learning honesty, fairness, and the laws that protect us.",
     askAge: "How old are you?",
     askAgeDesc: "We adapt the experience to your age.",

@@ -95,7 +95,7 @@ export function Dashboard() {
         <div className="container flex items-center justify-between py-3">
           <div className="font-display text-lg font-bold flex items-center gap-2">
             <span className="iq-grad-primary text-primary-foreground rounded-md px-2 py-0.5 text-sm shadow-glow">IQ</span>
-            IntegriQuest
+            FAIRO
           </div>
           <div className="flex items-center gap-2">
             <Button
