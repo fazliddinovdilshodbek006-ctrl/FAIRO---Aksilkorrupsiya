@@ -156,33 +156,48 @@ export function MissionRunner({
             })}
           </div>
 
-          {result === "correct" && mission.explanation && (
-            <p className="mt-3 text-sm bg-success/15 rounded-md p-3 animate-fade-in flex items-start gap-2">
-              <Sparkles className="inline h-4 w-4 mt-0.5 shrink-0 text-success" />
-              <span><span className="font-semibold">{t("mission.correct")} </span>{mission.explanation}</span>
-            </p>
+          {result === "correct" && (
+            <div className="mt-3 rounded-xl bg-success/15 p-3 animate-fade-in flex items-start gap-3">
+              {isChild && (
+                <Mascot name="auto" mood="happy" size="sm" className="shrink-0 -mt-1" />
+              )}
+              <div className="flex-1 text-sm flex items-start gap-2">
+                <Sparkles className="inline h-4 w-4 mt-0.5 shrink-0 text-success" />
+                <span>
+                  <span className="font-semibold">{t("mission.correct")} </span>
+                  {mission.explanation}
+                </span>
+              </div>
+            </div>
           )}
 
           {result === "wrong" && (
-            <div className="mt-3 rounded-md bg-destructive/10 p-3 animate-fade-in space-y-2">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <AlertTriangle className="h-4 w-4 text-destructive" />
-                {t("mission.wrong")}
+            <div className="mt-3 rounded-xl bg-destructive/10 p-3 animate-fade-in">
+              <div className="flex items-start gap-3">
+                {isChild && (
+                  <Mascot name="auto" mood="sad" size="sm" className="shrink-0 -mt-1" />
+                )}
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <AlertTriangle className="h-4 w-4 text-destructive" />
+                    {t("mission.wrong")}
+                  </div>
+                  {mission.explanation && (
+                    <p className="text-sm">
+                      <span className="font-semibold">{t("mission.wrongWhy")} </span>
+                      {mission.explanation}
+                    </p>
+                  )}
+                  {revealed && mission.options && mission.correctIndex !== undefined && (
+                    <p className="text-sm border-t pt-2">
+                      <span className="font-semibold">{t("mission.correctAnswerIs")} </span>
+                      <span className="text-success font-medium">
+                        {String.fromCharCode(65 + mission.correctIndex)}. {mission.options[mission.correctIndex]}
+                      </span>
+                    </p>
+                  )}
+                </div>
               </div>
-              {mission.explanation && (
-                <p className="text-sm">
-                  <span className="font-semibold">{t("mission.wrongWhy")} </span>
-                  {mission.explanation}
-                </p>
-              )}
-              {revealed && mission.options && mission.correctIndex !== undefined && (
-                <p className="text-sm border-t pt-2">
-                  <span className="font-semibold">{t("mission.correctAnswerIs")} </span>
-                  <span className="text-success font-medium">
-                    {String.fromCharCode(65 + mission.correctIndex)}. {mission.options[mission.correctIndex]}
-                  </span>
-                </p>
-              )}
             </div>
           )}
         </div>
