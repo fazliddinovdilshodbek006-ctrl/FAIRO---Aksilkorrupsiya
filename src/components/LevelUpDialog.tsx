@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/store";
-import { lawById } from "@/data/laws";
+import { useLawById } from "@/hooks/use-localized";
 import { ageGroupFor } from "@/types";
 import { AlertTriangle, HandCoins, ScrollText, Sparkles, Hammer } from "lucide-react";
 import { cn } from "@/lib/utils";
