@@ -60,7 +60,12 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   return (
     <div className="min-h-dvh bg-background">
       <header className="container flex justify-between items-center py-4">
-        <div className="font-display text-xl font-bold">FAIRO</div>
+        <div className="flex items-center gap-2">
+          <span className="iq-grad-primary text-primary-foreground rounded-lg px-2.5 py-1 text-sm font-display font-bold shadow-glow tracking-wide">
+            F
+          </span>
+          <span className="font-display text-xl font-bold tracking-tight">FAIRO</span>
+        </div>
         <LanguageSwitcher />
       </header>
 
@@ -69,10 +74,14 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           <section className="text-center space-y-6 animate-fade-in pt-6">
             <div className="iq-hero text-primary-foreground rounded-card p-8 shadow-glow">
               <div className="text-5xl mb-3">🛡️</div>
-              <h1 className="text-3xl font-display font-bold">{t("onboarding.welcome")}</h1>
-              <p className="mt-2 opacity-90">{t("onboarding.welcomeDesc")}</p>
+              <h1 className="font-display font-bold leading-tight tracking-tight text-[clamp(1.75rem,5vw,2.5rem)]">
+                {t("onboarding.welcome")}
+              </h1>
+              <p className="mt-3 opacity-95 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                {t("onboarding.welcomeDesc")}
+              </p>
             </div>
-            <Button size="lg" className="iq-grad-primary text-primary-foreground gap-2" onClick={() => setStep(1)}>
+            <Button size="lg" className="iq-grad-primary text-primary-foreground gap-2 font-display" onClick={() => setStep(1)}>
               {t("common.start")} <ChevronRight className="h-4 w-4" />
             </Button>
           </section>
@@ -81,14 +90,14 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         {step === 1 && (
           <section className="space-y-6 animate-fade-in pt-6">
             <div>
-              <h2 className="text-2xl font-display font-bold">{t("onboarding.askAge")}</h2>
-              <p className="text-muted-foreground">{t("onboarding.askAgeDesc")}</p>
+              <h2 className="text-2xl font-display font-bold tracking-tight">{t("onboarding.askAge")}</h2>
+              <p className="text-muted-foreground text-sm mt-1">{t("onboarding.askAgeDesc")}</p>
             </div>
             <div className="iq-card p-8 text-center">
-              <div className="text-7xl font-display font-bold iq-grad-primary bg-clip-text text-transparent">
+              <div className="text-7xl font-display font-bold iq-grad-primary bg-clip-text text-transparent leading-none">
                 {age}
               </div>
-              <div className="text-muted-foreground mt-1">years</div>
+              <div className="text-muted-foreground mt-2 text-sm">{t("profile.age").toLowerCase()}</div>
               <Slider
                 className="mt-6"
                 value={[age]}
@@ -113,8 +122,8 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         {step === 2 && (
           <section className="space-y-6 animate-fade-in pt-6">
             <div>
-              <h2 className="text-2xl font-display font-bold">{t("onboarding.pickInterests")}</h2>
-              <p className="text-muted-foreground">{t("onboarding.pickInterestsDesc")}</p>
+              <h2 className="text-2xl font-display font-bold tracking-tight">{t("onboarding.pickInterests")}</h2>
+              <p className="text-muted-foreground text-sm mt-1">{t("onboarding.pickInterestsDesc")}</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {ALL_INTERESTS.map((i) => {
