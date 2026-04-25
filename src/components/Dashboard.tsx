@@ -9,6 +9,7 @@ import { LevelUpDialog } from "@/components/LevelUpDialog";
 import { StoryCard } from "@/components/StoryCard";
 import { LawLibrary } from "@/components/LawLibrary";
 import { ProfilePanel } from "@/components/ProfilePanel";
+import { Mascot, useIsChildMode } from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Mission } from "@/types";
