@@ -66,5 +66,6 @@ export type Progress = {
   shortcutExpiresAt?: number;    // ms timestamp
   achievements: string[];
   storiesDoneToday: string[];
+  storyAnswers?: Record<string, { choice: "A" | "B"; outcome: "correct" | "wrong" }>;
   lastStoryDate: string;
 };
