@@ -131,17 +131,23 @@ export const useStore = create<State>()(
 
       answerStory: (storyId, choice, correctOverride) => {
         const { progress } = get();
-        if (progress.lastStoryDate !== todayKey()) {
-          progress.storiesDoneToday = [];
-          progress.lastStoryDate = todayKey();
-        }
-        if (progress.storiesDoneToday.includes(storyId)) return "already";
+        const today = todayKey();
+        const storiesDoneToday = progress.lastStoryDate === today ? progress.storiesDoneToday : [];
+        const storyAnswers = progress.lastStoryDate === today ? progress.storyAnswers ?? {} : {};
+
+        if (storiesDoneToday.includes(storyId)) return storyAnswers[storyId]?.outcome ?? "already";
+
         const correctAnswer = correctOverride ?? "A";
         const correct = correctAnswer === choice;
+        const outcome = correct ? "correct" : "wrong";
         const newProgress: Progress = {
           ...progress,
-          storiesDoneToday: [...progress.storiesDoneToday, storyId],
-          lastStoryDate: todayKey(),
+          storiesDoneToday: [...storiesDoneToday, storyId],
+          storyAnswers: {
+            ...storyAnswers,
+            [storyId]: { choice, outcome },
+          },
+          lastStoryDate: today,
           xp: progress.xp + (correct ? 20 : 5),
           coins: progress.coins + (correct ? 10 : 0),
         };
@@ -154,7 +160,7 @@ export const useStore = create<State>()(
         newProgress.level = level;
         newProgress.xp = xp;
         set({ progress: newProgress });
-        return correct ? "correct" : "wrong";
+        return outcome;
       },
 
       bribeCost: () => {
