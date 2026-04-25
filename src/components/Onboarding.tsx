@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { ALL_INTERESTS, Interest } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Mascot } from "@/components/Mascot";
 import { Sparkles, ChevronRight, ChevronLeft, Loader2,
   Calculator, Languages, Shield, Code2, Palette, FlaskConical, Landmark, Music } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -71,15 +72,24 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
       <main className="container max-w-xl pb-12">
         {step === 0 && (
-          <section className="text-center space-y-6 animate-fade-in pt-6">
-            <div className="iq-hero text-primary-foreground rounded-card p-8 shadow-glow">
-              <div className="text-5xl mb-3">🛡️</div>
-              <h1 className="font-display font-bold leading-tight tracking-tight text-[clamp(1.75rem,5vw,2.5rem)]">
-                {t("onboarding.welcome")}
-              </h1>
-              <p className="mt-3 opacity-95 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                {t("onboarding.welcomeDesc")}
-              </p>
+          <section className="text-center space-y-6 animate-fade-in pt-2">
+            <div className="iq-hero text-primary-foreground rounded-card p-6 sm:p-8 shadow-glow relative overflow-hidden">
+              <div className="absolute -bottom-2 -left-4 opacity-90">
+                <Mascot name="asilbek" size="lg" forceShow className="animate-float" />
+              </div>
+              <div className="absolute -bottom-2 -right-4 opacity-90">
+                <Mascot name="zumrad" size="lg" forceShow className="animate-bounce-slow" />
+              </div>
+              <div className="relative z-10 pt-2">
+                <div className="text-4xl mb-2">🛡️ ✨</div>
+                <h1 className="font-display font-bold leading-tight tracking-tight text-[clamp(1.75rem,5vw,2.5rem)]">
+                  {t("onboarding.welcome")}
+                </h1>
+                <p className="mt-3 opacity-95 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
+                  {t("onboarding.welcomeDesc")}
+                </p>
+              </div>
+              <div className="h-32 sm:h-36" />
             </div>
             <Button size="lg" className="iq-grad-primary text-primary-foreground gap-2 font-display" onClick={() => setStep(1)}>
               {t("common.start")} <ChevronRight className="h-4 w-4" />
