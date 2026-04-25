@@ -48,7 +48,7 @@ export function LevelUpDialog({
 
   if (!open) return null;
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
-  const law = lawById("anticorr_art_4");
+  const law = useLawById("anticorr_art_4");
 
   const onBribe = () => {
     setError(null);
