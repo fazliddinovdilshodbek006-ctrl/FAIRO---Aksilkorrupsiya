@@ -113,10 +113,17 @@ export function Dashboard() {
         </div>
       </header>
 
-      <main className={cn("container max-w-3xl py-5 space-y-5", isChild && "ikat-bg")}>
+      <main className={cn("container max-w-3xl py-5 space-y-5 relative", isChild && "ikat-bg")}>
+        {isChild && (
+          <>
+            <div className="blob bg-primary/30 h-72 w-72 -top-10 -left-20 animate-blob" aria-hidden />
+            <div className="blob bg-accent/30 h-80 w-80 top-40 -right-24 animate-blob" style={{ animationDelay: "-6s" }} aria-hidden />
+          </>
+        )}
+
         {isChild ? (
-          <div className="iq-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-fade-in relative overflow-hidden">
-            <Mascot size="md" className="shrink-0 -mb-2" />
+          <div className="kid-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-fade-in relative overflow-hidden border-primary/20 z-10">
+            <Mascot size="md" className="shrink-0 -mb-2 animate-float" />
             <div className="flex-1 min-w-0">
               <h1 className="font-display text-xl sm:text-2xl font-bold leading-tight">{t("home.greeting")}</h1>
               {profile && (
@@ -149,7 +156,7 @@ export function Dashboard() {
 
         <StatsBar />
 
-        <Tabs defaultValue="missions" className="w-full">
+        <Tabs defaultValue="missions" className="w-full relative z-10">
           <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="missions"><Hammer className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.yourMissions")}</span></TabsTrigger>
             <TabsTrigger value="stories"><BookOpen className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.dailyStories")}</span></TabsTrigger>
@@ -162,10 +169,16 @@ export function Dashboard() {
               <button
                 key={m.id}
                 onClick={() => setActive(m)}
-                className="iq-card p-4 w-full text-left hover:shadow-glow transition-all hover:-translate-y-0.5"
+                className={cn(
+                  "w-full text-left transition-all hover:-translate-y-0.5",
+                  isChild ? "kid-card p-4 border-primary/20" : "iq-card p-4 hover:shadow-glow"
+                )}
               >
                 <div className="flex items-start gap-3">
-                  <div className="iq-grad-primary text-primary-foreground rounded-lg h-12 w-12 flex items-center justify-center font-display text-lg">
+                  <div className={cn(
+                    "iq-grad-primary text-primary-foreground flex items-center justify-center font-display shrink-0",
+                    isChild ? "rounded-2xl h-14 w-14 text-xl shadow-glow" : "rounded-lg h-12 w-12 text-lg"
+                  )}>
                     {m.xp}
                   </div>
                   <div className="flex-1">

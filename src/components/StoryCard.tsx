@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { Button } from "@/components/ui/button";
 import { useLawById } from "@/hooks/use-localized";
 import { ageGroupFor, CaseStory } from "@/types";
 import { CheckCircle2, ScrollText, XCircle, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Mascot, useIsChildMode } from "@/components/Mascot";
+import { partyPopper } from "@/lib/celebrate";
 
 export function StoryCard({ story }: { story: CaseStory }) {
   const { t } = useTranslation();
   const profile = useStore((s) => s.profile);
   const progress = useStore((s) => s.progress);
   const answer = useStore((s) => s.answerStory);
+  const isChild = useIsChildMode();
 
   const today = new Date().toISOString().slice(0, 10);
   const savedAnswer = progress.lastStoryDate === today ? progress.storyAnswers?.[story.id] : undefined;
@@ -34,6 +36,7 @@ export function StoryCard({ story }: { story: CaseStory }) {
     const r = answer(story.id, c, story.correct);
     if (r === "already") return;
     setOutcome(r);
+    if (r === "correct") partyPopper();
   };
 
   return (
@@ -65,22 +68,32 @@ export function StoryCard({ story }: { story: CaseStory }) {
 
       {outcome && (
         <div className={cn(
-          "mt-4 rounded-lg p-3 text-sm animate-fade-in",
+          "mt-4 rounded-xl p-3 text-sm animate-fade-in flex items-start gap-3",
           outcome === "correct" ? "bg-success/10 text-foreground" : "bg-destructive/10 text-foreground"
         )}>
-          <div className="font-semibold flex items-center gap-1.5">
-            {outcome === "correct" ? (
-              <><CheckCircle2 className="h-4 w-4 text-success" /> {t("stories.explainCorrect")}</>
-            ) : (
-              <><XCircle className="h-4 w-4 text-destructive" /> {t("stories.explainWrong")}</>
-            )}
-          </div>
-          <p className="mt-1">{story.explanation}</p>
-          <div className="mt-3 border-t pt-3">
-            <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <ScrollText className="h-3.5 w-3.5" /> {law.article}
+          {isChild && (
+            <Mascot
+              name="auto"
+              mood={outcome === "correct" ? "happy" : "sad"}
+              size="sm"
+              className="shrink-0 -mt-1"
+            />
+          )}
+          <div className="flex-1">
+            <div className="font-semibold flex items-center gap-1.5">
+              {outcome === "correct" ? (
+                <><CheckCircle2 className="h-4 w-4 text-success" /> {t("stories.explainCorrect")}</>
+              ) : (
+                <><XCircle className="h-4 w-4 text-destructive" /> {t("stories.explainWrong")}</>
+              )}
             </div>
-            <p className="text-sm mt-0.5">{law.plain[ageG]}</p>
+            <p className="mt-1">{story.explanation}</p>
+            <div className="mt-3 border-t pt-3">
+              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <ScrollText className="h-3.5 w-3.5" /> {law.article}
+              </div>
+              <p className="text-sm mt-0.5">{law.plain[ageG]}</p>
+            </div>
           </div>
         </div>
       )}

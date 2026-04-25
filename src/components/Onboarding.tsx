@@ -59,8 +59,17 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   };
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="container flex justify-between items-center py-4">
+    <div className="min-h-dvh bg-background relative overflow-hidden">
+      {/* Decorative animated blobs (only visible on welcome step for visual punch) */}
+      {step === 0 && (
+        <>
+          <div className="blob bg-primary/40 h-80 w-80 -top-20 -left-24 animate-blob" aria-hidden />
+          <div className="blob bg-accent/40 h-96 w-96 top-40 -right-32 animate-blob" style={{ animationDelay: "-5s" }} aria-hidden />
+          <div className="blob bg-secondary/30 h-72 w-72 bottom-0 left-1/3 animate-blob" style={{ animationDelay: "-10s" }} aria-hidden />
+        </>
+      )}
+
+      <header className="container flex justify-between items-center py-4 relative z-10">
         <div className="flex items-center gap-2">
           <span className="iq-grad-primary text-primary-foreground rounded-lg px-2.5 py-1 text-sm font-display font-bold shadow-glow tracking-wide">
             F
@@ -70,29 +79,33 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         <LanguageSwitcher />
       </header>
 
-      <main className="container max-w-xl pb-12">
+      <main className="container max-w-xl pb-12 relative z-10">
         {step === 0 && (
-          <section className="text-center space-y-6 animate-fade-in pt-2">
-            <div className="iq-hero text-primary-foreground rounded-card p-6 sm:p-8 shadow-glow relative overflow-hidden">
-              <div className="absolute -bottom-2 -left-4 opacity-90">
-                <Mascot name="asilbek" size="lg" forceShow className="animate-float" />
-              </div>
-              <div className="absolute -bottom-2 -right-4 opacity-90">
-                <Mascot name="zumrad" size="lg" forceShow className="animate-bounce-slow" />
-              </div>
-              <div className="relative z-10 pt-2">
-                <div className="text-4xl mb-2">🛡️ ✨</div>
-                <h1 className="font-display font-bold leading-tight tracking-tight text-[clamp(1.75rem,5vw,2.5rem)]">
-                  {t("onboarding.welcome")}
-                </h1>
-                <p className="mt-3 opacity-95 text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                  {t("onboarding.welcomeDesc")}
-                </p>
-              </div>
-              <div className="h-32 sm:h-36" />
+          <section className="text-center space-y-8 animate-fade-in pt-4">
+            {/* Two mascots side by side, no gradient box */}
+            <div className="flex items-end justify-center gap-2 sm:gap-4 pt-2">
+              <Mascot name="asilbek" size="xl" forceShow className="animate-float" />
+              <Mascot name="zumrad" size="xl" forceShow className="animate-bounce-slow" />
             </div>
-            <Button size="lg" className="iq-grad-primary text-primary-foreground gap-2 font-display" onClick={() => setStep(1)}>
-              {t("common.start")} <ChevronRight className="h-4 w-4" />
+
+            <div className="space-y-3 px-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                <Sparkles className="h-3.5 w-3.5" /> FAIRO
+              </div>
+              <h1 className="font-display font-bold leading-[1.05] tracking-tight text-[clamp(2rem,6vw,3rem)]">
+                {t("onboarding.welcome")}
+              </h1>
+              <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto">
+                {t("onboarding.welcomeDesc")}
+              </p>
+            </div>
+
+            <Button
+              size="lg"
+              className="iq-grad-primary text-primary-foreground gap-2 font-display rounded-full px-8 h-14 text-base shadow-glow hover:scale-105 transition-transform"
+              onClick={() => setStep(1)}
+            >
+              {t("common.start")} <ChevronRight className="h-5 w-5" />
             </Button>
           </section>
         )}
