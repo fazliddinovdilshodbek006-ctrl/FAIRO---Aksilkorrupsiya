@@ -1,5 +1,5 @@
 const ru = {
-  app: { name: "IntegriQuest", tagline: "Честность — твоя суперсила" },
+  app: { name: "FAIRO", tagline: "Честность — твоя суперсила" },
   common: {
     continue: "Продолжить",
     back: "Назад",
@@ -15,7 +15,7 @@ const ru = {
     coins: "Монеты",
   },
   onboarding: {
-    welcome: "Добро пожаловать в IntegriQuest",
+    welcome: "Добро пожаловать в FAIRO",
     welcomeDesc: "Увлекательное путешествие про честность, справедливость и законы, которые нас защищают.",
     askAge: "Сколько тебе лет?",
     askAgeDesc: "Мы адаптируем опыт под твой возраст.",

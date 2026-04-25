@@ -1,5 +1,5 @@
 const uz = {
-  app: { name: "IntegriQuest", tagline: "Halollik — sizning super kuchingiz" },
+  app: { name: "FAIRO", tagline: "Halollik — sizning super kuchingiz" },
   common: {
     continue: "Davom etish",
     back: "Orqaga",
@@ -15,7 +15,7 @@ const uz = {
     coins: "Tangalar",
   },
   onboarding: {
-    welcome: "IntegriQuest'ga xush kelibsiz",
+    welcome: "FAIRO'ga xush kelibsiz",
     welcomeDesc: "Halollik, adolat va bizni himoya qiluvchi qonunlar haqida qiziqarli sayohat.",
     askAge: "Yoshingiz nechida?",
     askAgeDesc: "Tajribani yoshingizga moslaymiz.",
