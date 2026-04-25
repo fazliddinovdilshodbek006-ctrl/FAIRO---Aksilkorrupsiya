@@ -41,6 +41,7 @@ const initialProgress: Progress = {
   bribesTaken: 0,
   achievements: [],
   storiesDoneToday: [],
+  storyAnswers: {},
   lastStoryDate: "",
 };
 
