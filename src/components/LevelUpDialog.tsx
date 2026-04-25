@@ -46,9 +46,10 @@ export function LevelUpDialog({
     return () => clearTimeout(id);
   }, [progress.shortcutExpiresAt]);
 
-  if (!open) return null;
   const ageG = profile ? ageGroupFor(profile.age) : "explorer";
   const law = useLawById("anticorr_art_4");
+
+  if (!open) return null;
 
   const onBribe = () => {
     setError(null);
