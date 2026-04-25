@@ -115,14 +115,14 @@ export function Dashboard() {
 
       <main className={cn("container max-w-3xl py-5 space-y-5 relative", isChild && "ikat-bg")}>
         {isChild && (
-          <>
-            <div className="blob bg-primary/30 h-72 w-72 -top-10 -left-20 animate-blob" aria-hidden />
-            <div className="blob bg-accent/30 h-80 w-80 top-40 -right-24 animate-blob" style={{ animationDelay: "-6s" }} aria-hidden />
-          </>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden>
+            <div className="blob bg-primary/30 h-72 w-72 -top-10 -left-20 animate-blob" />
+            <div className="blob bg-accent/30 h-80 w-80 top-40 -right-24 animate-blob" style={{ animationDelay: "-6s" }} />
+          </div>
         )}
 
         {isChild ? (
-          <div className="kid-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-fade-in relative overflow-hidden border-primary/20 z-10">
+          <div className="kid-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-fade-in relative overflow-hidden border-primary/20">
             <Mascot size="md" className="shrink-0 -mb-2 animate-float" />
             <div className="flex-1 min-w-0">
               <h1 className="font-display text-xl sm:text-2xl font-bold leading-tight">{t("home.greeting")}</h1>
