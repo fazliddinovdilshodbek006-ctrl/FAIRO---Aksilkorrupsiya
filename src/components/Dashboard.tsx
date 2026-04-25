@@ -93,8 +93,8 @@ export function Dashboard() {
     <div className="min-h-dvh">
       <header className="sticky top-0 z-30 bg-background/85 backdrop-blur border-b">
         <div className="container flex items-center justify-between py-3">
-          <div className="font-display text-lg font-bold flex items-center gap-2">
-            <span className="iq-grad-primary text-primary-foreground rounded-md px-2 py-0.5 text-sm shadow-glow">IQ</span>
+          <div className="font-display text-lg font-bold flex items-center gap-2 tracking-tight">
+            <span className="iq-grad-primary text-primary-foreground rounded-md px-2 py-0.5 text-sm shadow-glow">F</span>
             FAIRO
           </div>
           <div className="flex items-center gap-2">
