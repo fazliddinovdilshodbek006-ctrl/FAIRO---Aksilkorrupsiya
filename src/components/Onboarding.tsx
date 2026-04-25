@@ -62,11 +62,11 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     <div className="min-h-dvh bg-background relative overflow-hidden">
       {/* Decorative animated blobs (only visible on welcome step for visual punch) */}
       {step === 0 && (
-        <>
-          <div className="blob bg-primary/40 h-80 w-80 -top-20 -left-24 animate-blob" aria-hidden />
-          <div className="blob bg-accent/40 h-96 w-96 top-40 -right-32 animate-blob" style={{ animationDelay: "-5s" }} aria-hidden />
-          <div className="blob bg-secondary/30 h-72 w-72 bottom-0 left-1/3 animate-blob" style={{ animationDelay: "-10s" }} aria-hidden />
-        </>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden>
+          <div className="blob bg-primary/40 h-80 w-80 -top-20 -left-24 animate-blob" />
+          <div className="blob bg-accent/40 h-96 w-96 top-40 -right-32 animate-blob" style={{ animationDelay: "-5s" }} />
+          <div className="blob bg-secondary/30 h-72 w-72 bottom-0 left-1/3 animate-blob" style={{ animationDelay: "-10s" }} />
+        </div>
       )}
 
       <header className="container flex justify-between items-center py-4 relative z-10">
