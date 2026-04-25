@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Button } from "@/components/ui/button";
-import { lawById } from "@/data/laws";
+import { useLawById } from "@/hooks/use-localized";
 import { ageGroupFor, CaseStory } from "@/types";
 import { CheckCircle2, ScrollText, XCircle, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
