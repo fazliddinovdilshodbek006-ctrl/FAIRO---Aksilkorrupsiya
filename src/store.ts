@@ -1,12 +1,24 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Profile, Progress, Mission, CaseStory, AgeGroup } from "@/types";
+import type { Profile, Progress, Mission, CaseStory, AgeGroup, AccessoryId } from "@/types";
 import { ageGroupFor } from "@/types";
 
 const SHORTCUT_DURATION_MS = 2.5 * 60 * 1000; // 2.5 minutes
 const BRIBE_BASE_COST = 30;
 
 const xpForLevel = (lvl: number) => 100 + lvl * 50;
+
+/** Cost in coins to unlock a cosmetic accessory. */
+export const ACCESSORY_COST: Record<AccessoryId, number> = {
+  hat_graduate: 80,
+  glasses_cool: 60,
+  cape_hero: 120,
+  crown_gold: 250,
+  scarf_stripes: 50,
+  badge_star: 40,
+};
+
+type DailyRewardResult = { ok: true; coins: number; xp: number } | { ok: false; reason: "already" };
 
 type State = {
   profile: Profile | null;
@@ -28,6 +40,20 @@ type State = {
   resolveBribe: () => void;
   answerStory: (storyId: string, choice: "A" | "B", correctOverride?: "A" | "B") => "correct" | "wrong" | "already";
 
+  // ---- Phase 3 ----
+  /** Call once per app session — credits a streak day if it's a new day. */
+  touchStreak: () => void;
+  /** Claim today's daily reward chest. */
+  claimDailyReward: () => DailyRewardResult;
+  /** Has today's chest already been opened? */
+  canClaimDaily: () => boolean;
+  /** Buy a cosmetic accessory. Returns true on success. */
+  buyAccessory: (id: AccessoryId) => boolean;
+  /** Toggle equipped state of an owned accessory. */
+  toggleAccessory: (id: AccessoryId) => void;
+  /** Set a friendly display name for the leaderboard. */
+  setDisplayName: (name: string) => void;
+
   bribeCost: () => number;
   xpToNext: () => number;
   ageGroup: () => AgeGroup;
@@ -43,6 +69,12 @@ const initialProgress: Progress = {
   storiesDoneToday: [],
   storyAnswers: {},
   lastStoryDate: "",
+  streak: 0,
+  lastStreakDate: "",
+  lastDailyClaim: "",
+  ownedAccessories: [],
+  equippedAccessories: [],
+  displayName: "",
 };
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
