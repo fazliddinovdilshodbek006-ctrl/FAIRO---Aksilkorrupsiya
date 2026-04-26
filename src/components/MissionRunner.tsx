@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
 import { partyPopper } from "@/lib/celebrate";
+import { SortGame } from "@/components/games/SortGame";
+import { TapRaceGame } from "@/components/games/TapRaceGame";
 
 export function MissionRunner({
   mission,
@@ -28,6 +30,15 @@ export function MissionRunner({
   const [result, setResult] = useState<"correct" | "wrong" | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [showOffer, setShowOffer] = useState(false);
+
+  // Delegate to dedicated mini-game components for kid-friendly types.
+  // (After all hooks have been declared above to satisfy rules-of-hooks.)
+  if (mission.type === "sort") {
+    return <SortGame mission={mission} onComplete={onComplete} onClose={onClose} />;
+  }
+  if (mission.type === "tap_race") {
+    return <TapRaceGame mission={mission} onComplete={onComplete} onClose={onClose} />;
+  }
 
   const submit = () => {
     if (picked === null) return;

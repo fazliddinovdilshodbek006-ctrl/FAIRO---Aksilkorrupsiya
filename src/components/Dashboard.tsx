@@ -12,9 +12,10 @@ import { ProfilePanel } from "@/components/ProfilePanel";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Mission } from "@/types";
+import { Mission, ageGroupFor } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
-import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2 } from "lucide-react";
+import { getKidMiniGames } from "@/data/miniGames";
+import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -34,11 +35,21 @@ export function Dashboard() {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Filter missions to user's interests
+  // Filter and size missions to user's age group:
+  //  - kid (≤9):       fewer missions (3) + 2 mini-games (sort + tap-race)
+  //  - explorer (≤12): 4 missions + 1 mini-game
+  //  - teen (≤15):     6 missions, no mini-games
+  //  - civic (16+):    6 missions, focus on depth & laws
   const myMissions = useMemo(() => {
     if (!profile) return missions;
+    const ag = ageGroupFor(profile.age);
     const filt = missions.filter((m) => profile.interests.includes(m.interest));
-    return filt.length ? filt : missions;
+    const base = filt.length ? filt : missions;
+    const cap = ag === "kid" ? 3 : ag === "explorer" ? 4 : 6;
+    const trimmed = base.slice(0, cap);
+    if (ag === "kid") return [...getKidMiniGames(profile.interests), ...trimmed];
+    if (ag === "explorer") return [getKidMiniGames(profile.interests)[0], ...trimmed];
+    return trimmed;
   }, [missions, profile]);
 
   const xpNext = xpForLevel(progress.level);
@@ -165,30 +176,40 @@ export function Dashboard() {
           </TabsList>
 
           <TabsContent value="missions" className="space-y-3 mt-4">
-            {myMissions.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => setActive(m)}
-                className={cn(
-                  "w-full text-left transition-all hover:-translate-y-0.5",
-                  isChild ? "kid-card p-4 border-primary/20" : "iq-card p-4 hover:shadow-glow"
-                )}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={cn(
-                    "iq-grad-primary text-primary-foreground flex items-center justify-center font-display shrink-0",
-                    isChild ? "rounded-2xl h-14 w-14 text-xl shadow-glow" : "rounded-lg h-12 w-12 text-lg"
-                  )}>
-                    {m.xp}
+            {myMissions.map((m) => {
+              const isMiniGame = m.type === "sort" || m.type === "tap_race";
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => setActive(m)}
+                  className={cn(
+                    "w-full text-left transition-all hover:-translate-y-0.5 relative",
+                    isChild ? "kid-card p-4 border-primary/20" : "iq-card p-4 hover:shadow-glow",
+                    isMiniGame && "border-accent/40 ring-1 ring-accent/20"
+                  )}
+                >
+                  {isMiniGame && (
+                    <span className="absolute top-2 right-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-accent/15 text-accent flex items-center gap-1">
+                      <Gamepad2 className="h-3 w-3" /> {t("mission.miniGame")}
+                    </span>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "text-primary-foreground flex items-center justify-center font-display shrink-0",
+                      isMiniGame ? "iq-grad-bribe" : "iq-grad-primary",
+                      isChild ? "rounded-2xl h-14 w-14 text-xl shadow-glow" : "rounded-lg h-12 w-12 text-lg"
+                    )}>
+                      {isMiniGame ? <Gamepad2 className="h-6 w-6" /> : m.xp}
+                    </div>
+                    <div className="flex-1 pr-16">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground">{t(`interests.${m.interest}`)}</div>
+                      <div className="font-display font-bold">{m.title}</div>
+                      <div className="text-sm text-muted-foreground">{m.description}</div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-xs uppercase tracking-wide text-muted-foreground">{t(`interests.${m.interest}`)}</div>
-                    <div className="font-display font-bold">{m.title}</div>
-                    <div className="text-sm text-muted-foreground">{m.description}</div>
-                  </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </TabsContent>
 
           <TabsContent value="stories" className="space-y-3 mt-4">

@@ -177,7 +177,10 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        // Stronger model for older learners (deeper reasoning), faster/cheaper for kids.
+        model: age >= 15 ? "google/gemini-2.5-pro"
+             : age <= 9  ? "google/gemini-2.5-flash-lite"
+                         : "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: system },
           { role: "user", content: userMsg },
