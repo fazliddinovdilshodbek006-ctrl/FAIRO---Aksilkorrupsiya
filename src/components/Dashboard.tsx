@@ -10,12 +10,16 @@ import { StoryCard } from "@/components/StoryCard";
 import { LawLibrary } from "@/components/LawLibrary";
 import { ProfilePanel } from "@/components/ProfilePanel";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
+import { StreakBadge } from "@/components/StreakBadge";
+import { DailyRewardCard } from "@/components/DailyRewardCard";
+import { MascotShop } from "@/components/MascotShop";
+import { Leaderboard } from "@/components/Leaderboard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Mission, ageGroupFor } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
 import { getKidMiniGames } from "@/data/miniGames";
-import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2 } from "lucide-react";
+import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2, Shirt, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
