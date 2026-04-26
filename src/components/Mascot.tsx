@@ -9,7 +9,7 @@ import { useStore } from "@/store";
 import { ACCESSORY_BY_ID } from "@/data/accessories";
 
 export type MascotName = "asilbek" | "zumrad" | "auto";
-export type MascotMood = "idle" | "happy" | "sad";
+export type MascotMood = "idle" | "happy" | "sad" | "talking";
 
 const MASCOTS = {
   asilbek: {
@@ -69,7 +69,8 @@ export function Mascot({
   const which: "asilbek" | "zumrad" =
     name === "auto" ? (Math.random() > 0.5 ? "asilbek" : "zumrad") : name;
   const m = MASCOTS[which];
-  const src = m[mood];
+  // Talking reuses happy art for an open-mouth smile
+  const src = mood === "talking" ? m.happy : m[mood];
 
   return (
     <div
@@ -86,9 +87,29 @@ export function Mascot({
           "object-contain drop-shadow-xl select-none pointer-events-none transition-all duration-300 w-full h-full",
           bounce && mood !== "sad" && "animate-bounce-slow",
           mood === "happy" && "animate-wiggle",
-          mood === "sad" && "animate-droop"
+          mood === "sad" && "animate-droop",
+          mood === "talking" && "animate-talking"
         )}
       />
+
+      {/* Speaking indicators: animated mouth bar + waving hand */}
+      {mood === "talking" && (
+        <>
+          <span
+            aria-hidden
+            className="absolute left-1/2 -translate-x-1/2 rounded-full bg-foreground/80 animate-mouth pointer-events-none"
+            style={{ bottom: "30%", width: "12cqh", height: "5cqh" }}
+          />
+          <span
+            aria-hidden
+            className="absolute select-none pointer-events-none leading-none animate-wave"
+            style={{ right: "-6%", top: "30%", fontSize: "26cqh" }}
+          >
+            👋
+          </span>
+        </>
+      )}
+
       {showAccessories &&
         equipped.map((id) => {
           const acc = ACCESSORY_BY_ID[id];
