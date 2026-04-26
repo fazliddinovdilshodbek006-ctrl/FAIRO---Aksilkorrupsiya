@@ -304,7 +304,7 @@ export const useStore = create<State>()(
       },
     }),
     {
-      name: "iq_state_v2",
+      name: "iq_state_v3",
       onRehydrateStorage: () => (state) => {
         if (state) state.hydrated = true;
       },
