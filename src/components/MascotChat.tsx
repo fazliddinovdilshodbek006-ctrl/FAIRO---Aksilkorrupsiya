@@ -5,23 +5,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mascot, type MascotName } from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Send, Volume2, VolumeX } from "lucide-react";
+import { Loader2, Send, Volume2, VolumeX, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-type ChatMsg = { role: "user" | "assistant"; content: string };
+import type { ChatMessage } from "@/types";
 
 /**
- * MascotChat — live AI friend powered by Lovable AI (Gemini) + ElevenLabs voice.
- * The mascot animates (mouth + hand wave + body sway) while the audio plays,
- * making it feel like a real conversation with the user's personal do'st.
+ * MascotChat — live AI friend powered by Lovable AI (Gemini).
+ *
+ * Voice strategy:
+ *   1. Prefer ElevenLabs (high-quality, returned as base64 mp3 by the edge fn).
+ *   2. If ElevenLabs is unavailable (401/quota/etc), fall back to the browser's
+ *      built-in SpeechSynthesis API so the mascot still talks aloud.
+ *   3. If both fail (or muted), the chat continues silently.
+ *
+ * Chat history is persisted in the Zustand store (localStorage) per-mascot,
+ * so messages survive a refresh and the conversation can continue.
  */
 export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName, "auto"> }) {
   const { t, i18n } = useTranslation();
   const profile = useStore((s) => s.profile);
   const displayName = useStore((s) => s.progress.displayName);
+  const persistedMessages = useStore((s) => s.chatHistory[mascot] ?? []);
+  const appendChatMessage = useStore((s) => s.appendChatMessage);
+  const clearChatHistory = useStore((s) => s.clearChatHistory);
 
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -29,25 +37,27 @@ export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // Greeting on first open
+  // Seed a greeting on first ever open (only if history is empty)
   useEffect(() => {
-    if (messages.length === 0) {
+    if (persistedMessages.length === 0) {
       const greetings: Record<string, string> = {
         uz: "Salom do'stim! Bugun qanday yordam beraman? 😊",
         en: "Hi friend! How can I help you today? 😊",
         ru: "Привет, друг! Чем помочь сегодня? 😊",
         kaa: "Salem dos! Bugin nege járdem berey? 😊",
       };
-      setMessages([
-        { role: "assistant", content: greetings[i18n.language] ?? greetings.uz },
-      ]);
+      appendChatMessage(mascot, {
+        role: "assistant",
+        content: greetings[i18n.language] ?? greetings.uz,
+        ts: Date.now(),
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mascot]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, busy]);
+  }, [persistedMessages, busy]);
 
   const stopAudio = () => {
     if (audioRef.current) {
@@ -55,24 +65,61 @@ export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName
       audioRef.current.src = "";
       audioRef.current = null;
     }
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setSpeaking(false);
   };
 
   useEffect(() => () => stopAudio(), []);
 
+  /** Browser Web Speech fallback — used when ElevenLabs is unavailable. */
+  const speakWithBrowser = (text: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return false;
+    try {
+      const utter = new SpeechSynthesisUtterance(text);
+      // Map app language to a BCP-47 hint
+      const langMap: Record<string, string> = {
+        uz: "uz-UZ",
+        ru: "ru-RU",
+        en: "en-US",
+        kaa: "uz-UZ", // closest available
+      };
+      utter.lang = langMap[i18n.language] ?? "uz-UZ";
+      utter.rate = 1;
+      utter.pitch = mascot === "zumrad" ? 1.15 : 0.95;
+      utter.onstart = () => setSpeaking(true);
+      utter.onend = () => setSpeaking(false);
+      utter.onerror = () => setSpeaking(false);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const send = async () => {
     const text = input.trim();
     if (!text || busy) return;
     setInput("");
-    const next: ChatMsg[] = [...messages, { role: "user", content: text }];
-    setMessages(next);
+
+    const userMsg: ChatMessage = { role: "user", content: text, ts: Date.now() };
+    appendChatMessage(mascot, userMsg);
+
+    // Build the context to send (use latest persisted + the new user msg)
+    const conversation = [...persistedMessages, userMsg].map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
     setBusy(true);
     stopAudio();
 
     try {
       const { data, error } = await supabase.functions.invoke("mascot-chat", {
         body: {
-          messages: next,
+          messages: conversation,
           mascot,
           age: profile?.age ?? 12,
           language: i18n.language,
@@ -92,15 +139,31 @@ export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName
       }
       if (!data?.reply) throw new Error("No reply");
 
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      appendChatMessage(mascot, {
+        role: "assistant",
+        content: data.reply,
+        ts: Date.now(),
+      });
 
-      if (data.audio && !muted) {
-        const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
-        audioRef.current = audio;
-        audio.onplay = () => setSpeaking(true);
-        audio.onended = () => setSpeaking(false);
-        audio.onerror = () => setSpeaking(false);
-        audio.play().catch(() => setSpeaking(false));
+      // Voice output: try ElevenLabs first, fall back to browser TTS
+      if (!muted) {
+        if (data.audio) {
+          const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+          audioRef.current = audio;
+          audio.onplay = () => setSpeaking(true);
+          audio.onended = () => setSpeaking(false);
+          audio.onerror = () => {
+            setSpeaking(false);
+            speakWithBrowser(data.reply);
+          };
+          audio.play().catch(() => {
+            setSpeaking(false);
+            speakWithBrowser(data.reply);
+          });
+        } else {
+          // Edge function couldn't synthesize (e.g. ElevenLabs 401) — use browser
+          speakWithBrowser(data.reply);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -129,6 +192,20 @@ export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName
           size="icon"
           variant="ghost"
           onClick={() => {
+            if (persistedMessages.length <= 1) return;
+            stopAudio();
+            clearChatHistory(mascot);
+            toast.success("Suhbat tozalandi");
+          }}
+          aria-label="Suhbatni tozalash"
+          title="Suhbatni tozalash"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => {
             if (speaking) stopAudio();
             setMuted((m) => !m);
           }}
@@ -140,9 +217,9 @@ export function MascotChat({ mascot = "asilbek" }: { mascot?: Exclude<MascotName
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2">
-        {messages.map((m, i) => (
+        {persistedMessages.map((m, i) => (
           <div
-            key={i}
+            key={`${m.ts}-${i}`}
             className={cn(
               "flex animate-fade-in",
               m.role === "user" ? "justify-end" : "justify-start"

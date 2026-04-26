@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Profile, Progress, Mission, CaseStory, AgeGroup, AccessoryId } from "@/types";
+import type { Profile, Progress, Mission, CaseStory, AgeGroup, AccessoryId, ChatMessage } from "@/types";
 import { ageGroupFor } from "@/types";
 
 const SHORTCUT_DURATION_MS = 2.5 * 60 * 1000; // 2.5 minutes
@@ -26,6 +26,8 @@ type State = {
   // AI-generated overrides; if empty, app falls back to localized static content
   missions: Mission[];
   stories: CaseStory[];
+  /** Persisted Do'st chat history per mascot */
+  chatHistory: Record<string, ChatMessage[]>;
   hydrated: boolean;
 
   setProfile: (p: Profile) => void;
@@ -53,6 +55,10 @@ type State = {
   toggleAccessory: (id: AccessoryId) => void;
   /** Set a friendly display name for the leaderboard. */
   setDisplayName: (name: string) => void;
+  /** Append a message to the persisted chat history for a mascot. */
+  appendChatMessage: (mascot: string, msg: ChatMessage) => void;
+  /** Clear chat history for a mascot (or all if no key given). */
+  clearChatHistory: (mascot?: string) => void;
 
   bribeCost: () => number;
   xpToNext: () => number;
@@ -86,6 +92,7 @@ export const useStore = create<State>()(
       progress: initialProgress,
       missions: [],
       stories: [],
+      chatHistory: {},
       hydrated: false,
 
       setProfile: (p) => set({ profile: p, progress: { ...initialProgress } }),
@@ -95,6 +102,7 @@ export const useStore = create<State>()(
           progress: initialProgress,
           missions: [],
           stories: [],
+          chatHistory: {},
         }),
 
       setMissions: (m) => set({ missions: m ?? [] }),
@@ -291,6 +299,22 @@ export const useStore = create<State>()(
         set({ progress: { ...progress, displayName: name.slice(0, 20) } });
       },
 
+      appendChatMessage: (mascot, msg) => {
+        const { chatHistory } = get();
+        const existing = chatHistory[mascot] ?? [];
+        // Cap to last 80 messages so localStorage stays small
+        const next = [...existing, msg].slice(-80);
+        set({ chatHistory: { ...chatHistory, [mascot]: next } });
+      },
+
+      clearChatHistory: (mascot) => {
+        const { chatHistory } = get();
+        if (!mascot) return set({ chatHistory: {} });
+        const next = { ...chatHistory };
+        delete next[mascot];
+        set({ chatHistory: next });
+      },
+
       bribeCost: () => {
         const { progress } = get();
         return BRIBE_BASE_COST + progress.bribesTaken * 25;
@@ -306,7 +330,11 @@ export const useStore = create<State>()(
     {
       name: "iq_state_v3",
       onRehydrateStorage: () => (state) => {
-        if (state) state.hydrated = true;
+        if (state) {
+          state.hydrated = true;
+          // Backfill for users on older persisted state
+          if (!state.chatHistory) state.chatHistory = {};
+        }
       },
     }
   )
