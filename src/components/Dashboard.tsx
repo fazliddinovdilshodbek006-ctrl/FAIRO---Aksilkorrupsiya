@@ -12,9 +12,10 @@ import { ProfilePanel } from "@/components/ProfilePanel";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Mission } from "@/types";
+import { Mission, ageGroupFor } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
-import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2 } from "lucide-react";
+import { getKidMiniGames } from "@/data/miniGames";
+import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
