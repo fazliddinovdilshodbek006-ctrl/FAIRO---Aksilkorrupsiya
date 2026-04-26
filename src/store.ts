@@ -299,6 +299,22 @@ export const useStore = create<State>()(
         set({ progress: { ...progress, displayName: name.slice(0, 20) } });
       },
 
+      appendChatMessage: (mascot, msg) => {
+        const { chatHistory } = get();
+        const existing = chatHistory[mascot] ?? [];
+        // Cap to last 80 messages so localStorage stays small
+        const next = [...existing, msg].slice(-80);
+        set({ chatHistory: { ...chatHistory, [mascot]: next } });
+      },
+
+      clearChatHistory: (mascot) => {
+        const { chatHistory } = get();
+        if (!mascot) return set({ chatHistory: {} });
+        const next = { ...chatHistory };
+        delete next[mascot];
+        set({ chatHistory: next });
+      },
+
       bribeCost: () => {
         const { progress } = get();
         return BRIBE_BASE_COST + progress.bribesTaken * 25;
