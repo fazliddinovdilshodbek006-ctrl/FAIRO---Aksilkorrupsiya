@@ -167,7 +167,7 @@ Deno.serve(async (req) => {
     }
 
     const audioBuf = await ttsRes.arrayBuffer();
-    const audioB64 = base64Encode(new Uint8Array(audioBuf));
+    const audioB64 = base64Encode(audioBuf);
 
     return new Response(
       JSON.stringify({ reply, audio: audioB64, voiceId, mood }),
