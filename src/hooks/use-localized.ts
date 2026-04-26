@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import { useStore } from "@/store";
 import { getMissions, getStories, getLaws, lawByIdLocalized, type Lang } from "@/data/localized";
+import { pickDailyStories } from "@/lib/dailyRotation";
 import type { Mission, CaseStory, LawArticle } from "@/types";
 
 export function useLang(): Lang {
