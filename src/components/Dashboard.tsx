@@ -35,11 +35,21 @@ export function Dashboard() {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Filter missions to user's interests
+  // Filter and size missions to user's age group:
+  //  - kid (≤9):       fewer missions (3) + 2 mini-games (sort + tap-race)
+  //  - explorer (≤12): 4 missions + 1 mini-game
+  //  - teen (≤15):     6 missions, no mini-games
+  //  - civic (16+):    6 missions, focus on depth & laws
   const myMissions = useMemo(() => {
     if (!profile) return missions;
+    const ag = ageGroupFor(profile.age);
     const filt = missions.filter((m) => profile.interests.includes(m.interest));
-    return filt.length ? filt : missions;
+    const base = filt.length ? filt : missions;
+    const cap = ag === "kid" ? 3 : ag === "explorer" ? 4 : 6;
+    const trimmed = base.slice(0, cap);
+    if (ag === "kid") return [...getKidMiniGames(profile.interests), ...trimmed];
+    if (ag === "explorer") return [getKidMiniGames(profile.interests)[0], ...trimmed];
+    return trimmed;
   }, [missions, profile]);
 
   const xpNext = xpForLevel(progress.level);
