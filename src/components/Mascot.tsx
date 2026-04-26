@@ -6,6 +6,7 @@ import zumradHappy from "@/assets/mascot-zumrad-happy.png";
 import zumradSad from "@/assets/mascot-zumrad-sad.png";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store";
+import { ACCESSORY_BY_ID } from "@/data/accessories";
 
 export type MascotName = "asilbek" | "zumrad" | "auto";
 export type MascotMood = "idle" | "happy" | "sad";
@@ -89,6 +90,8 @@ export function Mascot({
         equipped.map((id) => {
           const acc = ACCESSORY_BY_ID[id];
           if (!acc) return null;
+          // Use cqh (container query height) so emoji scales with mascot size
+          const fontSize = `${30 * (acc.scale ?? 1)}cqh`;
           return (
             <span
               key={id}
@@ -96,14 +99,12 @@ export function Mascot({
               className="absolute select-none pointer-events-none leading-none drop-shadow"
               style={{
                 ...acc.position,
-                fontSize: `calc(28% * ${acc.scale ?? 1} * var(--mascot-h, 1) * 1px)`,
-                // Use container height as the base for emoji size
-                // (computed via inline style below using a CSS trick)
+                fontSize,
+                // Fallback for browsers without container queries: ~1em
+                // (the parent text size will keep it visible)
               }}
             >
-              <span style={{ fontSize: `${(acc.scale ?? 1) * 30}%`, display: "inline-block" }}>
-                <span style={{ fontSize: "2.5rem" }}>{acc.emoji}</span>
-              </span>
+              {acc.emoji}
             </span>
           );
         })}
