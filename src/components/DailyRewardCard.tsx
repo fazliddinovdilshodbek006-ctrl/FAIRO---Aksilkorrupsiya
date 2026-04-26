@@ -3,7 +3,7 @@ import { Gift, Coins, Sparkles, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Button } from "@/components/ui/button";
-import { celebrate } from "@/lib/celebrate";
+import { partyPopper } from "@/lib/celebrate";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ export function DailyRewardCard({ playful = false }: { playful?: boolean }) {
     const r = claim();
     if (r.ok) {
       setOpened(true);
-      celebrate();
+      partyPopper();
       toast.success(t("gamification.claimedToast", { coins: r.coins, xp: r.xp }));
     }
   };
