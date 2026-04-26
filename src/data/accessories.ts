@@ -13,48 +13,54 @@ export type AccessoryDef = {
   scale?: number;
 };
 
+/**
+ * Positions are calibrated against the actual mascot artwork bounding box.
+ * The PNGs have transparent padding around the figure: the head sits roughly
+ * at 18-42% of total image height, and the eyes are around 30%. Accessories
+ * align to those landmarks (not the raw container).
+ */
 export const ACCESSORIES: AccessoryDef[] = [
   {
     id: "hat_graduate",
     emoji: "🎓",
     i18nKey: "hat_graduate",
-    position: { top: "-10%", left: "50%", transform: "translateX(-50%)" },
-    scale: 1.05,
+    position: { top: "10%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.9,
   },
   {
     id: "glasses_cool",
     emoji: "🕶️",
     i18nKey: "glasses_cool",
-    position: { top: "26%", left: "50%", transform: "translateX(-50%)" },
-    scale: 0.85,
+    position: { top: "33%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.6,
   },
   {
     id: "cape_hero",
     emoji: "🦸",
     i18nKey: "cape_hero",
-    position: { bottom: "-2%", right: "-6%" },
-    scale: 0.9,
+    position: { top: "62%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.75,
   },
   {
     id: "crown_gold",
     emoji: "👑",
     i18nKey: "crown_gold",
-    position: { top: "-12%", left: "50%", transform: "translateX(-50%)" },
-    scale: 1.1,
+    position: { top: "12%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.85,
   },
   {
     id: "scarf_stripes",
     emoji: "🧣",
     i18nKey: "scarf_stripes",
-    position: { top: "55%", left: "50%", transform: "translateX(-50%)" },
-    scale: 0.95,
+    position: { top: "48%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.7,
   },
   {
     id: "badge_star",
     emoji: "⭐",
     i18nKey: "badge_star",
-    position: { top: "62%", right: "10%" },
-    scale: 0.55,
+    position: { top: "55%", left: "68%", transform: "translate(-50%, -50%)" },
+    scale: 0.4,
   },
 ];
 

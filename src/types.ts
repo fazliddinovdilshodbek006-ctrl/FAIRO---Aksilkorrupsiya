@@ -97,3 +97,11 @@ export type Progress = {
   /** Username shown on the leaderboard */
   displayName?: string;
 };
+
+/** A single message in the Do'st (mascot) chat history. */
+export type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+  /** ms timestamp */
+  ts: number;
+};
