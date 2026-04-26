@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
 import { partyPopper } from "@/lib/celebrate";
+import { SortGame } from "@/components/games/SortGame";
+import { TapRaceGame } from "@/components/games/TapRaceGame";
 
 export function MissionRunner({
   mission,
