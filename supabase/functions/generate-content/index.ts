@@ -167,8 +167,8 @@ Deno.serve(async (req) => {
         }];
 
     const userMsg = kind === "missions"
-      ? `Generate ${safeCount} short missions for a learner aged ${age} (${ageGroup(age)}) interested in: ${safeInterests.join(", ")}. Each mission ties their interest to anti-corruption values (fairness, integrity, public goods, transparency). Use 'quiz' or 'scenario' type. xp between 20 and 50. Make options plausible. Return via the function.`
-      : `Generate ${safeCount} short daily case stories for a learner aged ${age} (${ageGroup(age)}). Each story is a real-life Uzbek scenario with two choices: A is the honest path, B is the corrupt shortcut. Do NOT label which is correct in the body. Set 'correct' to "A" in the metadata. Pick a relevant lawId from the allowed set. Return via the function.`;
+      ? `Generate ${safeCount} short missions for a learner aged ${age} (${ageGroup(age)}) interested in: ${safeInterests.join(", ")}. Each mission ties their interest to anti-corruption values (fairness, integrity, public goods, transparency). Use 'quiz' or 'scenario' type. xp between 20 and 50. Make options plausible. Vary which option index is correct (0,1,2,3) — do NOT always pick the same. Return via the function.`
+      : `Generate ${safeCount} short daily case stories for a learner aged ${age} (${ageGroup(age)}). Each story is a real-life Uzbek scenario with two choices. One is the honest path, the other is the corrupt shortcut. IMPORTANT: vary which side (A or B) is the honest/correct answer — roughly half "A" and half "B". Set 'correct' to whichever letter holds the honest option. Do NOT label which is correct in the body text. Pick a relevant lawId from the allowed set. Return via the function.`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
