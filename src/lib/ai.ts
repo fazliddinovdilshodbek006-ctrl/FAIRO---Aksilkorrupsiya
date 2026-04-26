@@ -55,8 +55,8 @@ export async function generateStories(opts: {
   language: Lang;
   count?: number;
 }): Promise<CaseStory[]> {
-  const { data, error } = await supabase.functions.invoke("generate-content", {
-    body: { ...opts, kind: "stories", count: opts.count ?? 4 },
+  const { data, error } = await invokeWithRetry("generate-content", {
+    ...opts, kind: "stories", count: opts.count ?? 4,
   });
   if (error) throw error;
   if (data?.error) throw new Error(data.error);
