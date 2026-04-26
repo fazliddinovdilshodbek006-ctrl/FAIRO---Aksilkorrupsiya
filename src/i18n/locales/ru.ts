@@ -42,8 +42,13 @@ const ru = {
     shop: "Магазин",
     leaderboard: "Лидеры",
     profile: "Профиль",
+    friend: "Друг",
     progress: "До следующего уровня",
     refresh: "Новые миссии",
+  },
+  friend: {
+    title: "Твой друг",
+    subtitle: "Поговори с Асилбеком или Зумрад — они слышат и отвечают голосом.",
   },
   gamification: {
     streakLabel: "дн. подряд",
