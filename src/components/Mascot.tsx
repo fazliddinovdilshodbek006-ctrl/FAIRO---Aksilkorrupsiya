@@ -70,7 +70,19 @@ export function Mascot({
     name === "auto" ? (Math.random() > 0.5 ? "asilbek" : "zumrad") : name;
   const m = MASCOTS[which];
   // Talking reuses happy art for an open-mouth smile
-  const src = mood === "talking" ? m.happy : m[mood];
+  const baseSrc = mood === "talking" ? m.happy : m[mood];
+
+  // If an accessory is equipped, swap the base art for the matching
+  // pre-painted variant. We only show one accessory at a time (the first
+  // equipped) because variants are single-accessory artworks. Variants
+  // share the idle expression — equipping is a "dress-up" moment.
+  const activeAccessory = showAccessories
+    ? equipped.map((id) => ACCESSORY_BY_ID[id]).find(Boolean)
+    : undefined;
+  const src =
+    activeAccessory && mood !== "sad"
+      ? activeAccessory.variants[which]
+      : baseSrc;
 
   return (
     <div
@@ -110,28 +122,6 @@ export function Mascot({
         </>
       )}
 
-      {showAccessories &&
-        equipped.map((id) => {
-          const acc = ACCESSORY_BY_ID[id];
-          if (!acc) return null;
-          // Use cqh (container query height) so emoji scales with mascot size
-          const fontSize = `${30 * (acc.scale ?? 1)}cqh`;
-          return (
-            <span
-              key={id}
-              aria-hidden
-              className="absolute select-none pointer-events-none leading-none drop-shadow"
-              style={{
-                ...acc.position,
-                fontSize,
-                // Fallback for browsers without container queries: ~1em
-                // (the parent text size will keep it visible)
-              }}
-            >
-              {acc.emoji}
-            </span>
-          );
-        })}
     </div>
   );
 }
