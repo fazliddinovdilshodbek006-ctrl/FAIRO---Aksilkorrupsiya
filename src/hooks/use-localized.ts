@@ -23,10 +23,19 @@ export function useMissions(): Mission[] {
   return useMemo(() => (generated.length ? generated : getMissions(lang)), [generated, lang]);
 }
 
+/**
+ * Returns today's stories. AI-generated stories (when present) are
+ * shown as-is — server already varies them. Static fallbacks are
+ * rotated daily and have their A/B options shuffled so the correct
+ * answer isn't always "A". Same day → same set; next day → fresh set.
+ */
 export function useStories(): CaseStory[] {
   const lang = useLang();
   const generated = useStore((s) => s.stories);
-  return useMemo(() => (generated.length ? generated : getStories(lang)), [generated, lang]);
+  return useMemo(() => {
+    if (generated.length) return generated;
+    return pickDailyStories(getStories(lang), 4);
+  }, [generated, lang]);
 }
 
 export function useLaws(): LawArticle[] {
