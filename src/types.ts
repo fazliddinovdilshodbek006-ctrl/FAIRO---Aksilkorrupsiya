@@ -5,7 +5,13 @@ export type Interest =
 
 export const ALL_INTERESTS: Interest[] = ["math","english","cyber","coding","art","science","history","music"];
 
-export type MissionType = "quiz" | "scenario" | "tap" | "match";
+export type MissionType = "quiz" | "scenario" | "tap" | "match" | "sort" | "tap_race";
+
+/** One item used by the "sort into baskets" mini-game (kids). */
+export type SortItem = { id: string; label: string; emoji?: string; bucket: "honest" | "corrupt" };
+
+/** One round of the "tap the right answer fast" mini-game (kids). */
+export type TapRaceRound = { prompt: string; options: string[]; correctIndex: number };
 
 export type Mission = {
   id: string;
@@ -19,6 +25,12 @@ export type Mission = {
   options?: string[];
   correctIndex?: number;
   explanation?: string;
+  // for "sort" mini-game
+  sortItems?: SortItem[];
+  // for "tap_race" mini-game
+  tapRounds?: TapRaceRound[];
+  /** Seconds limit for time-based games (e.g. tap_race). Default 20. */
+  timeLimit?: number;
 };
 
 export type CaseStory = {
