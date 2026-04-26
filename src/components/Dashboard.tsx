@@ -10,12 +10,16 @@ import { StoryCard } from "@/components/StoryCard";
 import { LawLibrary } from "@/components/LawLibrary";
 import { ProfilePanel } from "@/components/ProfilePanel";
 import { Mascot, useIsChildMode } from "@/components/Mascot";
+import { StreakBadge } from "@/components/StreakBadge";
+import { DailyRewardCard } from "@/components/DailyRewardCard";
+import { MascotShop } from "@/components/MascotShop";
+import { Leaderboard } from "@/components/Leaderboard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Mission, ageGroupFor } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
 import { getKidMiniGames } from "@/data/miniGames";
-import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2 } from "lucide-react";
+import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2, Shirt, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -111,6 +115,7 @@ export function Dashboard() {
             FAIRO
           </div>
           <div className="flex items-center gap-2">
+            <StreakBadge />
             <Button
               size="sm"
               variant="outline"
@@ -165,14 +170,18 @@ export function Dashboard() {
           </div>
         )}
 
+        <DailyRewardCard playful={isChild} />
+
         <StatsBar />
 
         <Tabs defaultValue="missions" className="w-full">
-          <TabsList className="w-full grid grid-cols-4">
-            <TabsTrigger value="missions"><Hammer className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.yourMissions")}</span></TabsTrigger>
-            <TabsTrigger value="stories"><BookOpen className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.dailyStories")}</span></TabsTrigger>
-            <TabsTrigger value="laws"><ScrollText className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.lawLibrary")}</span></TabsTrigger>
-            <TabsTrigger value="profile"><User className="h-4 w-4 sm:mr-1.5" /><span className="hidden sm:inline">{t("home.profile")}</span></TabsTrigger>
+          <TabsList className="w-full grid grid-cols-6">
+            <TabsTrigger value="missions"><Hammer className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.yourMissions")}</span></TabsTrigger>
+            <TabsTrigger value="stories"><BookOpen className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.dailyStories")}</span></TabsTrigger>
+            <TabsTrigger value="laws"><ScrollText className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.lawLibrary")}</span></TabsTrigger>
+            <TabsTrigger value="shop"><Shirt className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.shop")}</span></TabsTrigger>
+            <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.leaderboard")}</span></TabsTrigger>
+            <TabsTrigger value="profile"><User className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.profile")}</span></TabsTrigger>
           </TabsList>
 
           <TabsContent value="missions" className="space-y-3 mt-4">
@@ -222,6 +231,14 @@ export function Dashboard() {
 
           <TabsContent value="laws" className="mt-4">
             <LawLibrary />
+          </TabsContent>
+
+          <TabsContent value="shop" className="mt-4">
+            <MascotShop />
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-4">
+            <Leaderboard />
           </TabsContent>
 
           <TabsContent value="profile" className="mt-4">

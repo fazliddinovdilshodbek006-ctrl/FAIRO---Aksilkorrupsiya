@@ -6,6 +6,7 @@ import zumradHappy from "@/assets/mascot-zumrad-happy.png";
 import zumradSad from "@/assets/mascot-zumrad-sad.png";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store";
+import { ACCESSORY_BY_ID } from "@/data/accessories";
 
 export type MascotName = "asilbek" | "zumrad" | "auto";
 export type MascotMood = "idle" | "happy" | "sad";
@@ -46,6 +47,7 @@ export function Mascot({
   className,
   bounce = false,
   forceShow = false,
+  showAccessories = true,
 }: {
   name?: MascotName;
   size?: keyof typeof sizeMap;
@@ -53,9 +55,11 @@ export function Mascot({
   className?: string;
   bounce?: boolean;
   forceShow?: boolean;
+  showAccessories?: boolean;
 }) {
   const ageGroup = useStore((s) => s.ageGroup());
   const profile = useStore((s) => s.profile);
+  const equipped = useStore((s) => s.progress.equippedAccessories ?? []);
 
   // Hide for teens/civic unless explicitly forced
   if (!forceShow && profile && (ageGroup === "teen" || ageGroup === "civic")) {
@@ -68,21 +72,46 @@ export function Mascot({
   const src = m[mood];
 
   return (
-    <img
-      src={src}
-      alt={`${m.name} (${mood})`}
-      width={1024}
-      height={1024}
-      loading="lazy"
-      className={cn(
-        "object-contain drop-shadow-xl select-none pointer-events-none transition-all duration-300",
-        sizeMap[size],
-        bounce && mood !== "sad" && "animate-bounce-slow",
-        mood === "happy" && "animate-wiggle",
-        mood === "sad" && "animate-droop",
-        className
-      )}
-    />
+    <div
+      className={cn("relative inline-block", sizeMap[size], className)}
+      style={{ containerType: "size" } as React.CSSProperties}
+    >
+      <img
+        src={src}
+        alt={`${m.name} (${mood})`}
+        width={1024}
+        height={1024}
+        loading="lazy"
+        className={cn(
+          "object-contain drop-shadow-xl select-none pointer-events-none transition-all duration-300 w-full h-full",
+          bounce && mood !== "sad" && "animate-bounce-slow",
+          mood === "happy" && "animate-wiggle",
+          mood === "sad" && "animate-droop"
+        )}
+      />
+      {showAccessories &&
+        equipped.map((id) => {
+          const acc = ACCESSORY_BY_ID[id];
+          if (!acc) return null;
+          // Use cqh (container query height) so emoji scales with mascot size
+          const fontSize = `${30 * (acc.scale ?? 1)}cqh`;
+          return (
+            <span
+              key={id}
+              aria-hidden
+              className="absolute select-none pointer-events-none leading-none drop-shadow"
+              style={{
+                ...acc.position,
+                fontSize,
+                // Fallback for browsers without container queries: ~1em
+                // (the parent text size will keep it visible)
+              }}
+            >
+              {acc.emoji}
+            </span>
+          );
+        })}
+    </div>
   );
 }
 

@@ -1,12 +1,24 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Profile, Progress, Mission, CaseStory, AgeGroup } from "@/types";
+import type { Profile, Progress, Mission, CaseStory, AgeGroup, AccessoryId } from "@/types";
 import { ageGroupFor } from "@/types";
 
 const SHORTCUT_DURATION_MS = 2.5 * 60 * 1000; // 2.5 minutes
 const BRIBE_BASE_COST = 30;
 
 const xpForLevel = (lvl: number) => 100 + lvl * 50;
+
+/** Cost in coins to unlock a cosmetic accessory. */
+export const ACCESSORY_COST: Record<AccessoryId, number> = {
+  hat_graduate: 80,
+  glasses_cool: 60,
+  cape_hero: 120,
+  crown_gold: 250,
+  scarf_stripes: 50,
+  badge_star: 40,
+};
+
+type DailyRewardResult = { ok: true; coins: number; xp: number } | { ok: false; reason: "already" };
 
 type State = {
   profile: Profile | null;
@@ -28,6 +40,20 @@ type State = {
   resolveBribe: () => void;
   answerStory: (storyId: string, choice: "A" | "B", correctOverride?: "A" | "B") => "correct" | "wrong" | "already";
 
+  // ---- Phase 3 ----
+  /** Call once per app session — credits a streak day if it's a new day. */
+  touchStreak: () => void;
+  /** Claim today's daily reward chest. */
+  claimDailyReward: () => DailyRewardResult;
+  /** Has today's chest already been opened? */
+  canClaimDaily: () => boolean;
+  /** Buy a cosmetic accessory. Returns true on success. */
+  buyAccessory: (id: AccessoryId) => boolean;
+  /** Toggle equipped state of an owned accessory. */
+  toggleAccessory: (id: AccessoryId) => void;
+  /** Set a friendly display name for the leaderboard. */
+  setDisplayName: (name: string) => void;
+
   bribeCost: () => number;
   xpToNext: () => number;
   ageGroup: () => AgeGroup;
@@ -43,6 +69,12 @@ const initialProgress: Progress = {
   storiesDoneToday: [],
   storyAnswers: {},
   lastStoryDate: "",
+  streak: 0,
+  lastStreakDate: "",
+  lastDailyClaim: "",
+  ownedAccessories: [],
+  equippedAccessories: [],
+  displayName: "",
 };
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -163,6 +195,102 @@ export const useStore = create<State>()(
         return outcome;
       },
 
+      // ---- Phase 3: streaks, daily reward, mascot shop ----
+      touchStreak: () => {
+        const { progress } = get();
+        const today = todayKey();
+        if (progress.lastStreakDate === today) return; // already counted
+
+        const yesterday = (() => {
+          const d = new Date();
+          d.setDate(d.getDate() - 1);
+          return d.toISOString().slice(0, 10);
+        })();
+        const newStreak =
+          progress.lastStreakDate === yesterday ? (progress.streak ?? 0) + 1 : 1;
+
+        const achievements = [...(progress.achievements ?? [])];
+        if (newStreak >= 7 && !achievements.includes("weekStreak")) {
+          achievements.push("weekStreak");
+        }
+
+        set({
+          progress: {
+            ...progress,
+            streak: newStreak,
+            lastStreakDate: today,
+            achievements,
+          },
+        });
+      },
+
+      canClaimDaily: () => {
+        const { progress } = get();
+        return progress.lastDailyClaim !== todayKey();
+      },
+
+      claimDailyReward: () => {
+        const { progress } = get();
+        const today = todayKey();
+        if (progress.lastDailyClaim === today) return { ok: false, reason: "already" };
+
+        // Reward scales gently with streak: base 20 coins + streak*5 (cap 80)
+        const streak = progress.streak ?? 0;
+        const coins = Math.min(80, 20 + streak * 5);
+        const xp = Math.min(50, 10 + streak * 3);
+
+        let newXp = progress.xp + xp;
+        let newLevel = progress.level;
+        while (newXp >= xpForLevel(newLevel)) {
+          newXp -= xpForLevel(newLevel);
+          newLevel += 1;
+        }
+
+        set({
+          progress: {
+            ...progress,
+            coins: progress.coins + coins,
+            xp: newXp,
+            level: newLevel,
+            lastDailyClaim: today,
+          },
+        });
+        return { ok: true, coins, xp };
+      },
+
+      buyAccessory: (id) => {
+        const { progress } = get();
+        const owned = progress.ownedAccessories ?? [];
+        if (owned.includes(id)) return false;
+        const cost = ACCESSORY_COST[id];
+        if (progress.coins < cost) return false;
+        set({
+          progress: {
+            ...progress,
+            coins: progress.coins - cost,
+            ownedAccessories: [...owned, id],
+            equippedAccessories: [...(progress.equippedAccessories ?? []), id],
+          },
+        });
+        return true;
+      },
+
+      toggleAccessory: (id) => {
+        const { progress } = get();
+        const owned = progress.ownedAccessories ?? [];
+        if (!owned.includes(id)) return;
+        const equipped = progress.equippedAccessories ?? [];
+        const next = equipped.includes(id)
+          ? equipped.filter((x) => x !== id)
+          : [...equipped, id];
+        set({ progress: { ...progress, equippedAccessories: next } });
+      },
+
+      setDisplayName: (name) => {
+        const { progress } = get();
+        set({ progress: { ...progress, displayName: name.slice(0, 20) } });
+      },
+
       bribeCost: () => {
         const { progress } = get();
         return BRIBE_BASE_COST + progress.bribesTaken * 25;
@@ -176,7 +304,7 @@ export const useStore = create<State>()(
       },
     }),
     {
-      name: "iq_state_v2",
+      name: "iq_state_v3",
       onRehydrateStorage: () => (state) => {
         if (state) state.hydrated = true;
       },

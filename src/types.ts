@@ -68,6 +68,9 @@ export type Profile = {
   createdAt: string;
 };
 
+/** Cosmetic items the mascot can wear. Purely visual. */
+export type AccessoryId = "hat_graduate" | "glasses_cool" | "cape_hero" | "crown_gold" | "scarf_stripes" | "badge_star";
+
 export type Progress = {
   level: number;
   xp: number;
@@ -80,4 +83,17 @@ export type Progress = {
   storiesDoneToday: string[];
   storyAnswers?: Record<string, { choice: "A" | "B"; outcome: "correct" | "wrong" }>;
   lastStoryDate: string;
+  // ---- Phase 3: gamification ----
+  /** Current consecutive-day streak (incremented when user opens app on a new day) */
+  streak?: number;
+  /** YYYY-MM-DD of the last day the streak was credited */
+  lastStreakDate?: string;
+  /** YYYY-MM-DD of the last day the daily-reward chest was claimed */
+  lastDailyClaim?: string;
+  /** Owned cosmetic accessories (purchased with coins) */
+  ownedAccessories?: AccessoryId[];
+  /** Currently equipped accessories on the mascot */
+  equippedAccessories?: AccessoryId[];
+  /** Username shown on the leaderboard */
+  displayName?: string;
 };
