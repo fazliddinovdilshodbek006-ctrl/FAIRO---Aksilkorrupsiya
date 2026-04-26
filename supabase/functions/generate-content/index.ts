@@ -219,6 +219,23 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Server-side safety net: ~50% of stories get A↔B swapped so the
+    // correct answer isn't always "A" even if the model is biased.
+    if (kind === "stories" && Array.isArray(args.stories)) {
+      args.stories = args.stories.map((s: any) => {
+        if (Math.random() < 0.5 && s?.choiceA && s?.choiceB) {
+          const a = s.choiceA, b = s.choiceB;
+          return {
+            ...s,
+            choiceA: b,
+            choiceB: a,
+            correct: s.correct === "A" ? "B" : "A",
+          };
+        }
+        return s;
+      });
+    }
+
     return new Response(JSON.stringify(args), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
