@@ -26,18 +26,19 @@ export function MissionRunner({
   const coins = useStore((s) => s.progress.coins);
   const isChild = useIsChildMode();
 
+  const [picked, setPicked] = useState<number | null>(null);
+  const [result, setResult] = useState<"correct" | "wrong" | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [showOffer, setShowOffer] = useState(false);
+
   // Delegate to dedicated mini-game components for kid-friendly types.
+  // (After all hooks have been declared above to satisfy rules-of-hooks.)
   if (mission.type === "sort") {
     return <SortGame mission={mission} onComplete={onComplete} onClose={onClose} />;
   }
   if (mission.type === "tap_race") {
     return <TapRaceGame mission={mission} onComplete={onComplete} onClose={onClose} />;
   }
-
-  const [picked, setPicked] = useState<number | null>(null);
-  const [result, setResult] = useState<"correct" | "wrong" | null>(null);
-  const [revealed, setRevealed] = useState(false);
-  const [showOffer, setShowOffer] = useState(false);
 
   const submit = () => {
     if (picked === null) return;
