@@ -72,7 +72,10 @@ export function Mascot({
   const src = m[mood];
 
   return (
-    <div className={cn("relative inline-block", sizeMap[size], className)}>
+    <div
+      className={cn("relative inline-block", sizeMap[size], className)}
+      style={{ containerType: "size" } as React.CSSProperties}
+    >
       <img
         src={src}
         alt={`${m.name} (${mood})`}
