@@ -77,7 +77,7 @@ export function Mascot({
   // equipped) because variants are single-accessory artworks. Variants
   // share the idle expression — equipping is a "dress-up" moment.
   const activeAccessory = showAccessories
-    ? equipped.map((id) => ACCESSORY_BY_ID[id]).find(Boolean)
+    ? [...equipped].reverse().map((id) => ACCESSORY_BY_ID[id]).find(Boolean)
     : undefined;
   const src =
     activeAccessory && mood !== "sad"
