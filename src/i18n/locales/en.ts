@@ -72,6 +72,7 @@ const en = {
     scoreLine: "{{correct}} / {{total}} correct",
     tapRace: "Tap-race",
     tapRaceIntro: "{{n}} quick rounds in {{t}} seconds. Tap the fair choice fast!",
+  },
   levelup: {
     title: "Level up!",
     choose: "Choose your path",
