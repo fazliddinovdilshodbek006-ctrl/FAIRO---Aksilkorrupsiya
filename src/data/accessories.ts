@@ -24,43 +24,48 @@ export const ACCESSORIES: AccessoryDef[] = [
     id: "hat_graduate",
     emoji: "🎓",
     i18nKey: "hat_graduate",
-    position: { top: "5%", left: "50%", transform: "translate(-50%, -50%)" },
-    scale: 0.7,
+    // Sit on top of the head, slightly overlapping the hair
+    position: { top: "20%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.55,
   },
   {
     id: "glasses_cool",
     emoji: "🕶️",
     i18nKey: "glasses_cool",
-    position: { top: "26%", left: "50%", transform: "translate(-50%, -50%)" },
-    scale: 0.45,
+    // Across the eyes
+    position: { top: "37%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.4,
   },
   {
     id: "cape_hero",
     emoji: "🦸",
     i18nKey: "cape_hero",
-    position: { top: "55%", left: "50%", transform: "translate(-50%, -50%)" },
-    scale: 0.7,
+    // Lower torso
+    position: { top: "70%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.6,
   },
   {
     id: "crown_gold",
     emoji: "👑",
     i18nKey: "crown_gold",
-    position: { top: "6%", left: "50%", transform: "translate(-50%, -50%)" },
-    scale: 0.65,
+    position: { top: "21%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.5,
   },
   {
     id: "scarf_stripes",
     emoji: "🧣",
     i18nKey: "scarf_stripes",
-    position: { top: "38%", left: "50%", transform: "translate(-50%, -50%)" },
-    scale: 0.55,
+    // Around the neck
+    position: { top: "48%", left: "50%", transform: "translate(-50%, -50%)" },
+    scale: 0.45,
   },
   {
     id: "badge_star",
     emoji: "⭐",
     i18nKey: "badge_star",
-    position: { top: "48%", left: "62%", transform: "translate(-50%, -50%)" },
-    scale: 0.3,
+    // Pinned on chest
+    position: { top: "58%", left: "62%", transform: "translate(-50%, -50%)" },
+    scale: 0.25,
   },
 ];
 
