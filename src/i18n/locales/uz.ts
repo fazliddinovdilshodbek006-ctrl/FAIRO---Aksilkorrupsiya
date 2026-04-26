@@ -42,8 +42,13 @@ const uz = {
     shop: "Do'kon",
     leaderboard: "Yetakchilar",
     profile: "Profil",
+    friend: "Do'st",
     progress: "Keyingi darajagacha",
     refresh: "Yangi missiyalar",
+  },
+  friend: {
+    title: "Sizning do'stingiz",
+    subtitle: "Asilbek yoki Zumrad bilan suhbatlashing — ular sizni tinglaydi va ovozda javob beradi.",
   },
   gamification: {
     streakLabel: "kun ketma-ket",
