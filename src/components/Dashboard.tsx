@@ -115,6 +115,7 @@ export function Dashboard() {
             FAIRO
           </div>
           <div className="flex items-center gap-2">
+            <StreakBadge />
             <Button
               size="sm"
               variant="outline"
