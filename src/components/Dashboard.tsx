@@ -233,6 +233,14 @@ export function Dashboard() {
             <LawLibrary />
           </TabsContent>
 
+          <TabsContent value="shop" className="mt-4">
+            <MascotShop />
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-4">
+            <Leaderboard />
+          </TabsContent>
+
           <TabsContent value="profile" className="mt-4">
             <ProfilePanel />
           </TabsContent>
