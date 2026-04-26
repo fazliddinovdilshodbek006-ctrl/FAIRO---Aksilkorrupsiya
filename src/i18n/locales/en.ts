@@ -42,8 +42,13 @@ const en = {
     shop: "Shop",
     leaderboard: "Leaders",
     profile: "Profile",
+    friend: "Friend",
     progress: "Progress to next level",
     refresh: "New missions",
+  },
+  friend: {
+    title: "Your friend",
+    subtitle: "Chat with Asilbek or Zumrad — they listen and reply with their voice.",
   },
   gamification: {
     streakLabel: "day streak",

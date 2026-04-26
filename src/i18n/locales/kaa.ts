@@ -42,8 +42,13 @@ const kaa = {
     shop: "Дүкан",
     leaderboard: "Жетекшилер",
     profile: "Профиль",
+    friend: "Дос",
     progress: "Кейинги дәрежеге шекем",
     refresh: "Жаңа миссиялар",
+  },
+  friend: {
+    title: "Сениң досың",
+    subtitle: "Асилбек ямаса Зумрад менен сөйлес — олар тыңлайды ҳәм даўыс пенен жуўап береди.",
   },
   gamification: {
     streakLabel: "күн қатар",

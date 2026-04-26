@@ -212,6 +212,12 @@
   .animate-wiggle { animation: wiggle 0.7s ease-in-out 2; transform-origin: 50% 90%; }
   .animate-droop { animation: droop 0.6s ease-out both; transform-origin: 50% 100%; }
   .animate-blob { animation: blob 14s ease-in-out infinite; }
+  /* Talking — gentle "breathing" + tilt, used while audio is playing */
+  .animate-talking { animation: talking 0.45s ease-in-out infinite alternate; transform-origin: 50% 95%; }
+  /* Hand-wave overlay element */
+  .animate-wave { animation: wave 1.6s ease-in-out infinite; transform-origin: 70% 100%; }
+  /* Mouth bar (shown over mascot while speaking) */
+  .animate-mouth { animation: mouth 0.22s ease-in-out infinite alternate; transform-origin: 50% 50%; }
 
   /* Decorative ikat-inspired pattern background for child mode */
   .ikat-bg {
@@ -286,5 +292,17 @@
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(30px, -20px) scale(1.08); }
     66% { transform: translate(-20px, 25px) scale(0.95); }
+  }
+  @keyframes talking {
+    0% { transform: translateY(0) scale(1) rotate(-1deg); }
+    100% { transform: translateY(-3px) scale(1.02) rotate(1.5deg); }
+  }
+  @keyframes wave {
+    0%, 100% { transform: rotate(-12deg); }
+    50% { transform: rotate(18deg); }
+  }
+  @keyframes mouth {
+    0% { transform: scaleY(0.4); }
+    100% { transform: scaleY(1.1); }
   }
 }
