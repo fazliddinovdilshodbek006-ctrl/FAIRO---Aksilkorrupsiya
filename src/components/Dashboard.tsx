@@ -14,12 +14,13 @@ import { StreakBadge } from "@/components/StreakBadge";
 import { DailyRewardCard } from "@/components/DailyRewardCard";
 import { MascotShop } from "@/components/MascotShop";
 import { Leaderboard } from "@/components/Leaderboard";
+import { MascotChat } from "@/components/MascotChat";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Mission, ageGroupFor } from "@/types";
 import { generateMissions, generateStories } from "@/lib/ai";
 import { getKidMiniGames } from "@/data/miniGames";
-import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2, Shirt, Trophy } from "lucide-react";
+import { Sparkles, RefreshCcw, BookOpen, ScrollText, User, Hammer, Loader2, Gamepad2, Shirt, Trophy, MessageCircleHeart } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -175,9 +176,10 @@ export function Dashboard() {
         <StatsBar />
 
         <Tabs defaultValue="missions" className="w-full">
-          <TabsList className="w-full grid grid-cols-6">
+          <TabsList className="w-full grid grid-cols-7">
             <TabsTrigger value="missions"><Hammer className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.yourMissions")}</span></TabsTrigger>
             <TabsTrigger value="stories"><BookOpen className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.dailyStories")}</span></TabsTrigger>
+            <TabsTrigger value="friend" className="data-[state=active]:bg-accent/15"><MessageCircleHeart className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.friend")}</span></TabsTrigger>
             <TabsTrigger value="laws"><ScrollText className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.lawLibrary")}</span></TabsTrigger>
             <TabsTrigger value="shop"><Shirt className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.shop")}</span></TabsTrigger>
             <TabsTrigger value="leaderboard"><Trophy className="h-4 w-4 sm:mr-1.5" /><span className="hidden md:inline">{t("home.leaderboard")}</span></TabsTrigger>
@@ -227,6 +229,16 @@ export function Dashboard() {
               <p className="text-sm text-muted-foreground">{t("stories.subtitle")}</p>
             </div>
             {stories.map((s) => <StoryCard key={s.id} story={s} />)}
+          </TabsContent>
+
+          <TabsContent value="friend" className="mt-4 space-y-3">
+            <div>
+              <h2 className="font-display text-xl font-bold flex items-center gap-2">
+                <MessageCircleHeart className="h-5 w-5 text-accent" /> {t("friend.title")}
+              </h2>
+              <p className="text-sm text-muted-foreground">{t("friend.subtitle")}</p>
+            </div>
+            <MascotChat mascot={profile && profile.age <= 12 ? "asilbek" : (Math.random() > 0.5 ? "asilbek" : "zumrad")} />
           </TabsContent>
 
           <TabsContent value="laws" className="mt-4">
