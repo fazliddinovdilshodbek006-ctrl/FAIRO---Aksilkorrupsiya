@@ -330,7 +330,11 @@ export const useStore = create<State>()(
     {
       name: "iq_state_v3",
       onRehydrateStorage: () => (state) => {
-        if (state) state.hydrated = true;
+        if (state) {
+          state.hydrated = true;
+          // Backfill for users on older persisted state
+          if (!state.chatHistory) state.chatHistory = {};
+        }
       },
     }
   )
